@@ -4,162 +4,142 @@
 ---
 
 ## 📌 မာတိကာ (Contents)
-1. [Routing ဆိုတာဘာလဲနှင့် HTTP Methods များ](#၁-routing-ဆိုတာဘာလဲနှင့်-http-methods-များ)
-2. [Route Parameters နှင့် Regex Constraints](#၂-route-parameters-နှင့်-regex-constraints)
-3. [Named Routes နှင့် `route()` Helper အသုံးချပုံ](#၃-named-routes-နှင့်-route-helper-အသုံးချပုံ)
-4. [Route Groups (Prefix, Names, Middlewares)](#၄-route-groups-prefix-names-middlewares)
-5. [Controllers အမျိုးအစားများ (Basic, Resource, Single Action)](#၅-controllers-အမျိုးအစားများ)
-6. [Route Model Binding (Implicit vs Explicit)](#၆-route-model-binding)
-7. [လုပ်ငန်းခွင်သုံး CRUD Controller ကုဒ်နမူနာ အပြည့်အစုံ](#၇-လုပ်ငန်းခွင်သုံး-crud-controller-ကုဒ်နမူနာ)
+1. [Routing ဆိုတာဘာလဲ? ဘာကြောင့် သုံးရသလဲ? အားသာချက်များ](#၁-routing-ဆိုတာဘာလဲ)
+2. [HTTP Methods များ (GET, POST, PUT, PATCH, DELETE)](#၂-http-methods-များ)
+3. [Route Parameters နှင့် Constraints (ဘာကြောင့် စစ်ဆေးရသလဲ?)](#၃-route-parameters-နှင့်-constraints)
+4. [Named Routes နှင့် `route()` Helper အသုံးချပုံ](#၄-named-routes-နှင့်-route-helper-အသုံးချပုံ)
+5. [Route Groups (Prefix, Names, Middlewares)](#၅-route-groups-prefix-names-middlewares)
+6. [Controllers အမျိုးအစားများ (Basic, Resource, Single Action)](#၆-controllers-အမျိုးအစားများ)
+7. [Route Model Binding (Implicit vs Explicit)](#၇-route-model-binding)
+8. [လုပ်ငန်းခွင်သုံး CRUD Controller ကုဒ်နမူနာ အပြည့်အစုံ](#၈-လုပ်ငန်းခွင်သုံး-crud-controller-ကုဒ်နမူနာ)
 
 ---
 
-## ၁။ Routing ဆိုတာဘာလဲနှင့် HTTP Methods များ
+## ၁။ Routing ဆိုတာဘာလဲ?
 
-**Routing** ဆိုသည်မှာ အသုံးပြုသူ Browser မှ ရိုက်ထည့်လိုက်သော URL Path (ဥပမာ- `/products`, `/login`) ကို လက်ခံပြီး မည်သည့် Controller သို့မဟုတ် Logic ထံသို့ ပို့ဆောင်ပေးရမည်ကို လမ်းညွှန်ပေးသော စနစ်ဖြစ်ပါသည်။
+### (က) ဒါက ဘာလဲ? (What is it?)
+**Routing** ဆိုသည်မှာ အသုံးပြုသူ Browser ၏ URL (ဥပမာ- `/products`, `/checkout`) ကို လက်ခံပြီး မည်သည့် Controller သို့မဟုတ် Logic ထံသို့ လွှဲပြောင်းပေးရမည်ကို လမ်းညွှန်သတ်မှတ်ပေးသော စနစ်ဖြစ်သည်။
 
-Web Routes များကို `routes/web.php` ဖိုင်တွင် ရေးသားရသည်။
+### (ခ) ဘာကြောင့် မဖြစ်မနေ အသုံးပြုရသလဲ? (Why use this feature?)
+ရိုးရိုး PHP တွင် `index.php?page=products&id=15` ကဲ့သို့ ရှုပ်ထွေးသော Query String များ သုံးရသည်။ Laravel Routing ဖြင့် လူဖတ်ရလွယ်ကူပြီး SEO အထောက်အကူပြုသော Clean URLs (ဥပမာ `/products/15`) ကို ဖန်တီးနိုင်သည်။
 
-### အဓိက HTTP Methods (Verbs) များ:
+### (ဂ) အသုံးပြုခြင်း၏ အားသာချက်များ (Advantages):
+* **RESTful Standards**: GET, POST, PUT, DELETE စသည့် စံ HTTP Methods များကို တိကျစွာ ခွဲခြားနိုင်သည်။
+* **Centralized Routing**: URL အားလုံးကို `routes/web.php` ဖိုင်တစ်ခုတည်းတွင် စုစည်းစီမံနိုင်သည်။
+* **Middleware Integration**: URL တစ်ခုချင်းစီအလိုက် Login စစ်ဆေးခြင်းများကို တစ်ခါတည်း တွဲဖက်သတ်မှတ်နိုင်သည်။
+
+---
+
+## ၂။ HTTP Methods များ
+
 ```php
 use Illuminate\Support\Facades\Route;
 
-// ၁။ ဒေတာများကို ဖတ်ရှုရယူရန် (Read)
-Route::get('/users', function () {
-    return 'User list';
-});
+// ၁။ GET: ဒေတာများကို ဖတ်ရှုရယူရန် (Read)
+Route::get('/products', [ProductController::class, 'index']);
 
-// ၂။ ဒေတာ အသစ် ဖန်တီးသိမ်းဆည်းရန် (Create)
-Route::post('/users', function () {
-    return 'User created';
-});
+// ၂။ POST: ဒေတာ အသစ် ဖန်တီးသိမ်းဆည်းရန် (Create)
+Route::post('/products', [ProductController::class, 'store']);
 
-// ၃။ ရှိပြီးသား ဒေတာကို အပြည့်အစုံ/တစိတ်တပိုင်း ပြင်ဆင်ရန် (Update)
-Route::put('/users/{id}', function ($id) {
-    return 'User fully updated';
-});
-Route::patch('/users/{id}', function ($id) {
-    return 'User partially updated';
-});
+// ၃။ PUT / PATCH: ရှိပြီးသား ဒေတာကို ပြင်ဆင်ရန် (Update)
+Route::put('/products/{id}', [ProductController::class, 'update']);
 
-// ၄။ ဒေတာကို ဖျက်ပစ်ရန် (Delete)
-Route::delete('/users/{id}', function ($id) {
-    return 'User deleted';
-});
+// ၄။ DELETE: ဒေတာကို ဖျက်ပစ်ရန် (Delete)
+Route::delete('/products/{id}', [ProductController::class, 'destroy']);
 ```
 
 ---
 
-## ၂။ Route Parameters နှင့် Regex Constraints
+## ၃။ Route Parameters နှင့် Constraints
 
-### (က) Required Parameter (မဖြစ်မနေ ထည့်ရမည့် တန်ဖိုး)
-```php
-Route::get('/users/{id}', function (string $id) {
-    return "User ID: " . $id;
-});
-```
+### (က) ဒါက ဘာလဲ?
+URL ထဲမှ Dynamic တန်ဖိုးများ (ဥပမာ- Product ID, Article Slug) ကို ဖမ်းယူသော စနစ်ဖြစ်သည်။
 
-### (ခ) Optional Parameter (မပါလဲ ရသည်)
-URL တွင် parameter မပါလာပါက default တန်ဖိုး သတ်မှတ်ပေးရသည်:
-```php
-Route::get('/posts/{slug?}', function (string $slug = 'all') {
-    return "Showing posts for category: " . $slug;
-});
-```
+### (ခ) ဘာကြောင့် Constraints စစ်ဆေးရသလဲ?
+URL တွင် `/orders/abc` ဟု စာသားမှားယွင်းရိုက်ထည့်လာပါက Database သို့ Query သွားရောက် မမေးမြန်းမီ Route အဆင့်မှာပင် တားဆီးရန် ဖြစ်သည်။
 
-### (ဂ) Regular Expression Constraints (URL တန်ဖိုး စစ်ဆေးခြင်း)
-မလိုလားအပ်သော URL အမှားများကို ကာကွယ်ရန် `where` အသုံးပြုနိုင်သည်:
 ```php
-// ID သည် ဂဏန်းသီးသန့်သာ ဖြစ်ရမည်
+// ၁။ Required Parameter + Number Constraint (ID သည် ဂဏန်းသီးသန့် ဖြစ်ရမည်)
 Route::get('/orders/{id}', function (string $id) {
     return "Order #{$id}";
 })->whereNumber('id');
 
-// Name သည် အက္ခရာ သီးသန့်သာ ဖြစ်ရမည်
-Route::get('/user/{name}', function (string $name) {
-    return "Username: {$name}";
-})->whereAlpha('name');
+// ၂။ Optional Parameter (မပါလဲ ရသည် - Default Value ထည့်ပေးရသည်)
+Route::get('/posts/{category?}', function (string $category = 'all') {
+    return "Category: " . $category;
+});
 ```
 
 ---
 
-## ၃။ Named Routes နှင့် `route()` Helper အသုံးချပုံ
+## ၄။ Named Routes နှင့် `route()` Helper အသုံးချပုံ
 
-Named Routes သည် Route တစ်ခုချင်းစီကို သီးသန့် အမည်တစ်ခု ပေးထားခြင်း ဖြစ်သည်။ နောင်တစ်ချိန်တွင် URL path ပြောင်းလဲသွားသော်လည်း ကုဒ်များ လိုက်ပြင်စရာ မလိုတော့ဘဲ အလိုအလျောက် အဆင်ပြေစေသည်။
+### (က) ဒါက ဘာလဲ?
+Route တစ်ခုချင်းစီကို စိတ်ကြိုက် သီးသန့် အမည်တစ်ခု ပေးထားခြင်း ဖြစ်သည်။
+
+### (ခ) ဘာကြောင့် မဖြစ်မနေ အသုံးပြုရသလဲ? (Why use it in real work?)
+နောင်တစ်ချိန်တွင် Marketing အရ URL ကို `/contact-us` မှ `/support/contact` ဟု ပြောင်းလိုက်သည့်အခါ Named Route မသုံးထားပါက Blade Template ဖိုင်ပေါင်း ရာချီတွင် လိုက်လံပြင်ဆင်နေရမည်။ Named Route သုံးထားပါက တစ်နေရာတည်း ပြင်ရုံဖြင့် ကျန်နေရာအားလုံး auto ပြောင်းသွားသည်။
 
 ```php
 // Route ကို အမည်ပေးခြင်း
-Route::get('/user/profile/settings', [ProfileController::class, 'edit'])->name('profile.settings');
+Route::get('/customer/contact-us', [PageController::class, 'contact'])->name('contact');
 
-// Controller သို့မဟုတ် View ထဲတွင် ပြန်ခေါ်သုံးပုံ:
+// Controller သို့မဟုတ် View တွင် သုံးစွဲပုံ:
 // 1. Redirection:
-return redirect()->route('profile.settings');
+return redirect()->route('contact');
 
-// 2. Blade Link ထဲတွင်:
-// <a href="{{ route('profile.settings') }}">Settings</a>
+// 2. Blade Link:
+// <a href="{{ route('contact') }}">ဆက်သွယ်ရန်</a>
 
 // 3. Parameters ပါဝင်သော Named Route:
 Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
-// သုံးစွဲပုံ: route('products.show', ['id' => 45]) -> URL: /products/45
+// သုံးစွဲပုံ: route('products.show', ['id' => 25]) -> Output: /products/25
 ```
 
 ---
 
-## ၄။ Route Groups (Prefix, Names, Middlewares)
+## ၅။ Route Groups (Prefix, Names, Middlewares)
 
-လုပ်ငန်းခွင်တွင် Routes ပေါင်းများစွာကို စနစ်တကျ စုစည်းရန် Route Groups ကို မဖြစ်မနေ အသုံးပြုရပါသည်:
+### (က) ဒါက ဘာလဲ?
+Routes ပေါင်းများစွာတွင် ထပ်ခါတလဲလဲ တူညီနေသော URL Prefix များ၊ Name Prefixes များနှင့် Middlewares များကို စုစည်းပေးသော စနစ်ဖြစ်သည်။
+
+### (ခ) အားသာချက်များ:
+* **DRY Principle (Don't Repeat Yourself)**: ကုဒ်ထပ်နေမှုကို ဖယ်ရှားပေးသည်။
+* **Admin Dashboard Routing**: Admin သီးသန့် Routes များကို စနစ်တကျ ကာကွယ်နိုင်သည်။
 
 ```php
-Route::middleware(['auth'])               // အဖွဲ့ဝင်များသာ ဝင်ခွင့်ရှိမည်
-     ->prefix('admin')                    // URL အရှေ့တွင် /admin/ ပါမည်
-     ->name('admin.')                     // Route name အရှေ့တွင် admin. ပါမည်
+Route::middleware(['auth', 'admin'])     // Admin Login သာ ဝင်ခွင့်ရှိမည်
+     ->prefix('admin')                   // URL ရှေ့တွင် /admin/ ပါမည်
+     ->name('admin.')                    // Route name ရှေ့တွင် admin. ပါမည်
      ->group(function () {
 
          // URL: /admin/dashboard | Name: admin.dashboard
          Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-         // URL: /admin/users | Name: admin.users.index
-         Route::get('/users', [UserController::class, 'index'])->name('users.index');
-
-         // URL: /admin/reports | Name: admin.reports
-         Route::get('/reports', [ReportController::class, 'index'])->name('reports');
+         // URL: /admin/products | Name: admin.products.index
+         Route::get('/products', [ProductController::class, 'index'])->name('products.index');
      });
 ```
 
 ---
 
-## ၅။ Controllers အမျိုးအစားများ
+## ၆။ Controllers အမျိုးအစားများ
 
-Controller ဆိုသည်မှာ HTTP Request ကို လက်ခံပြီး သက်ဆိုင်ရာ Model နှင့် View တို့ကို ချိတ်ဆက်ပေးသော စီမံခန့်ခွဲသူ (Traffic Controller) ဖြစ်သည်။
+### (က) Resource Controller (လုပ်ငန်းခွင်တွင် အသုံးအများဆုံး)
+* **ဘာကြောင့် သုံးရသလဲ**: CRUD စနစ်တစ်ခုအတွက် လိုအပ်သော Standard Actions (၇) ခု (`index`, `create`, `store`, `show`, `edit`, `update`, `destroy`) ကို တစ်ပြိုင်နက် ဖန်တီးပေးသည်။
 
-### (က) Basic Controller
 ```bash
-php artisan make:controller PostController
+php artisan make:controller ProductController --resource
 ```
 
-### (ခ) Resource Controller (လုပ်ငန်းခွင်တွင် အသုံးအများဆုံး)
-CRUD စနစ်တစ်ခုအတွက် လိုအပ်သော Standard Actions (၇) ခုကို တစ်ပြိုင်နက် ဖန်တီးပေးသည်:
-```bash
-php artisan make:controller ArticleController --resource
-```
-
-`routes/web.php` တွင် လိုင်းတစ်ကြောင်းတည်းဖြင့် CRUD Routes ၇ ခုလုံးကို ချိတ်ဆက်နိုင်သည်:
+`routes/web.php` တွင် လိုင်းတစ်ကြောင်းတည်းဖြင့် CRUD Routes ၇ ခုလုံး ချိတ်ဆက်နိုင်သည်:
 ```php
-Route::resource('articles', ArticleController::class);
+Route::resource('products', ProductController::class);
 ```
 
-| HTTP Verb | Path | Action | Route Name | ရည်ရွယ်ချက် |
-| :--- | :--- | :--- | :--- | :--- |
-| `GET` | `/articles` | `index` | `articles.index` | ဆောင်းပါးအားလုံး စာရင်းပြရန် |
-| `GET` | `/articles/create` | `create` | `articles.create` | အသစ်တင်မည့် Form ပြရန် |
-| `POST` | `/articles` | `store` | `articles.store` | အသစ်ကို Database သို့ သိမ်းရန် |
-| `GET` | `/articles/{article}` | `show` | `articles.show` | ဆောင်းပါးတစ်ခုချင်းစီ အသေးစိတ်ပြရန် |
-| `GET` | `/articles/{article}/edit` | `edit` | `articles.edit` | ပြင်ဆင်မည့် Form ပြရန် |
-| `PUT/PATCH` | `/articles/{article}` | `update` | `articles.update` | ပြင်ဆင်ချက်ကို Database သို့ update လုပ်ရန် |
-| `DELETE` | `/articles/{article}` | `destroy` | `articles.destroy` | ဆောင်းပါးကို ဖျက်ပစ်ရန် |
+### (ခ) Single Action Controller (`__invoke`)
+* **ဘာကြောင့် သုံးရသလဲ**: Action တစ်ခုတည်းသာ လုပ်ဆောင်သော သီးသန့် Controller (ဥပမာ- PDF Export လုပ်ခြင်း၊ Stripe Payment Webhook) အတွက် သုံးသည်။
 
-### (ဂ) Single Action Controller (`__invoke`)
-လုပ်ဆောင်ချက်တစ်ခုတည်းသာ သီးသန့်ရှိသောအခါ (ဥပမာ- PDF Export လုပ်ခြင်း):
 ```bash
 php artisan make:controller ExportInvoiceController --invokable
 ```
@@ -172,102 +152,97 @@ class ExportInvoiceController extends Controller
         // Invoice PDF ကို generate လုပ်ပြီး download ပေးမည်
     }
 }
-
-// routes/web.php
-Route::get('/invoices/{invoice}/pdf', ExportInvoiceController::class)->name('invoices.pdf');
 ```
 
 ---
 
-## ၆။ Route Model Binding
+## ၇။ Route Model Binding (Implicit vs Explicit)
 
-**Route Model Binding** သည် URL မှ ပါလာသော ID အလိုက် Database ထဲမှ Model record ကို အလိုအလျောက် Query ဆွဲထုတ်ပေးသော Laravel ၏ အထူးစွမ်းအားမြင့် စနစ်တစ်ခု ဖြစ်သည်။
+### (က) ဒါက ဘာလဲ?
+URL မှ ပါလာသော ID အလိုက် Database ထဲမှ Model record ကို အလိုအလျောက် Query ဆွဲထုတ်ပေးသော Laravel ၏ စွမ်းအားမြင့် Feature ဖြစ်သည်။
+
+### (ခ) ဘာကြောင့် မဖြစ်မနေ အသုံးပြုရသလဲ?
+Manual ရေးနည်းတွင် `Product::find($id)` လုပ်ရပြီး Data မရှိပါက `if (!$product) { abort(404); }` ဟု ကိုယ်တိုင် စစ်ဆေးနေရသည်။
+
+### (ဂ) အားသာချက်:
+Controller Argument တွင် Model Type-hint ပေးလိုက်ရုံဖြင့် Laravel က ဒေတာမရှိပါက 404 Not Found Page ကို auto ပြပေးသည်။
 
 ```php
-// ❌ ရိုးရိုး Manual ရေးနည်း (လိုင်းပိုများပြီး 404 ကို ကိုယ်တိုင်စစ်ရသည်)
-Route::get('/posts/{id}', function ($id) {
-    $post = Post::find($id);
-    if (! $post) {
-        abort(404);
-    }
-    return view('posts.show', compact('post'));
+// ✅ Laravel Implicit Route Model Binding
+// URL: /products/{product} -> Argument: (Product $product) တူညီရမည်
+Route::get('/products/{product}', function (Product $product) {
+    // Database Query ရေးစရာမလိုဘဲ $product object အသင့် ရရှိသည်
+    return view('products.show', compact('product'));
 });
 
-// ✅ Laravel Implicit Route Model Binding (အလွန် သန့်ရှင်းသည်)
-// Parameter name {post} နှင့် Controller argument $post တူညီရပါမည်
-Route::get('/posts/{post}', function (Post $post) {
-    // Model record မရှိပါက 404 Not Found Page ကို auto ပြပေးသည်
-    return view('posts.show', compact('post'));
-});
-```
-
-#### Slug ဖြင့် Bind လုပ်လိုပါက:
-```php
-// ID အစား slug ဖြင့် ရှာလိုသောအခါ
-Route::get('/posts/{post:slug}', [PostController::class, 'show']);
+// Slug ဖြင့် Bind လုပ်လိုပါက:
+Route::get('/articles/{article:slug}', [ArticleController::class, 'show']);
 ```
 
 ---
 
-## ၇။ လုပ်ငန်းခွင်သုံး CRUD Controller ကုဒ်နမူနာ
+## ၈။ လုပ်ငန်းခွင်သုံး CRUD Controller ကုဒ်နမူနာ
 
 ```php
 namespace App\Http\Controllers;
 
-use App\Models\Article;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
-class ArticleController extends Controller
+class ProductController extends Controller
 {
     public function index()
     {
-        $articles = Article::latest()->paginate(10);
-        return view('articles.index', compact('articles'));
+        $products = Product::latest()->paginate(10);
+        return view('products.index', compact('products'));
     }
 
     public function create()
     {
-        return view('articles.create');
+        return view('products.create');
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title'   => 'required|max:255',
-            'content' => 'required',
+            'title' => 'required|max:255',
+            'price' => 'required|numeric|min:0',
         ]);
 
-        Article::create($validated);
+        Product::create($validated);
 
-        return redirect()->route('articles.index')->with('success', 'ဆောင်းပါး အသစ် တင်ပြီးပါပြီ!');
+        return redirect()->route('products.index')
+                         ->with('success', 'ပစ္စည်း အသစ် ထည့်သွင်းပြီးပါပြီ!');
     }
 
-    public function show(Article $article)
+    public function show(Product $product)
     {
-        return view('articles.show', compact('article'));
+        return view('products.show', compact('product'));
     }
 
-    public function edit(Article $article)
+    public function edit(Product $product)
     {
-        return view('articles.edit', compact('article'));
+        return view('products.edit', compact('product'));
     }
 
-    public function update(Request $request, Article $article)
+    public function update(Request $request, Product $product)
     {
         $validated = $request->validate([
-            'title'   => 'required|max:255',
-            'content' => 'required',
+            'title' => 'required|max:255',
+            'price' => 'required|numeric|min:0',
         ]);
 
-        $article->update($validated);
+        $product->update($validated);
 
-        return redirect()->route('articles.index')->with('success', 'ဆောင်းပါး ပြင်ဆင်ပြီးပါပြီ!');
+        return redirect()->route('products.index')
+                         ->with('success', 'ပစ္စည်း ပြင်ဆင်ခြင်း အောင်မြင်ပါသည်!');
     }
 
-    public function destroy(Article $article)
+    public function destroy(Product $product)
     {
-        $article->delete();
-        return redirect()->route('articles.index')->with('success', 'ဆောင်းပါး ဖျက်ပြီးပါပြီ!');
+        $product->delete();
+        return redirect()->route('products.index')
+                         ->with('success', 'ပစ္စည်း ဖျက်ပြီးပါပြီ!');
     }
 }
 ```

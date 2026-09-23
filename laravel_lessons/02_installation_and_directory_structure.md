@@ -5,167 +5,163 @@
 
 ## 📌 မာတိကာ (Contents)
 1. [စနစ် လိုအပ်ချက်များနှင့် စတင် Install လုပ်ခြင်း](#၁-စနစ်-လိုအပ်ချက်များနှင့်-စတင်-install-လုပ်ခြင်း)
-2. [Artisan CLI နှင့် ပထမဆုံး Local Server စတင် Run ခြင်း](#၂-artisan-cli-နှင့်-ပထမဆုံး-local-server-စတင်-run-ခြင်း)
-3. [Laravel Directory Structure အပြည့်အစုံ ရှင်းလင်းချက်](#၃-laravel-directory-structure-အပြည့်အစုံ-ရှင်းလင်းချက်)
-4. [Environment Configuration (`.env`) ဖိုင်၏ အရေးကြီးပုံ](#၄-environment-configuration-env-ဖိုင်၏-အရေးကြီးပုံ)
-5. [အသုံးအများဆုံး Artisan Commands စာရင်း](#၅-အသုံးအများဆုံး-artisan-commands-စာရင်း)
-6. [လက်တွေ့လေ့ကျင့်ရန် Lab Exercise](#၆-လက်တွေ့လေ့ကျင့်ရန်-lab-exercise)
+2. [Artisan CLI ဆိုတာဘာလဲ? ဘာကြောင့် သုံးရသလဲ? အားသာချက်များ](#၂-artisan-cli-ဆိုတာဘာလဲ)
+3. [Laravel Directory Structure အပြည့်အစုံ ရှင်းလင်းချက် (Function Sectors)](#၃-laravel-directory-structure-အပြည့်အစုံ-ရှင်းလင်းချက်)
+   - [၃.၁။ `app/` Directory (Core Business Logic)](#၃၁-app-directory)
+   - [၃.၂။ `config/` Directory (Centralized System Config)](#၃၂-config-directory)
+   - [၃.၃။ `database/` Directory (Database Management)](#၃၃-database-directory)
+   - [၃.၄။ `public/` Directory (Web Root)](#၃၄-public-directory)
+   - [၃.၅။ `resources/` Directory (Presentation & Assets)](#၃၅-resources-directory)
+   - [၃.၆။ `routes/` Directory (Application Endpoints)](#၃၆-routes-directory)
+   - [၃.၇။ `storage/` Directory (Logs & Uploaded Media)](#၃၇-storage-directory)
+4. [Environment Configuration (`.env`) ဖိုင် (ဘာကြောင့် သုံးရသလဲ? အားသာချက်များ)](#၄-environment-configuration-env-ဖိုင်)
+5. [လုပ်ငန်းခွင်သုံး အသုံးအများဆုံး Artisan Commands စာရင်း](#၅-လုပ်ငန်းခွင်သုံး-အသုံးအများဆုံး-artisan-commands-စာရင်း)
 
 ---
 
 ## ၁။ စနစ် လိုအပ်ချက်များနှင့် စတင် Install လုပ်ခြင်း
 
 Laravel 11+ ကို စတင်အသုံးပြုရန် သင့်စက်တွင် အောက်ပါ Software များ ရှိထားရန် လိုအပ်ပါသည်:
-* **PHP >= 8.2** (BCMath, Ctype, Fileinfo, JSON, Mbstring, OpenSSL, PDO, Tokenizer, XML extension များ ဖွင့်ထားရမည်)
-* **Composer** (PHP ၏ Package Dependency Manager)
-* **Database Engine** (MySQL 8.0+, MariaDB 10.3+, PostgreSQL 12+, သို့မဟုတ် SQLite 3.35+)
-* **Node.js & NPM** (Frontend Asset Bundling - Vite အတွက်)
+* **PHP >= 8.2** (BCMath, Ctype, Fileinfo, JSON, Mbstring, OpenSSL, PDO, Tokenizer, XML)
+* **Composer** (PHP Package Dependency Manager)
+* **MySQL / PostgreSQL / SQLite**
 
-### (က) Composer ဖြင့် Project အသစ် ဆောက်ခြင်း
-Terminal သို့မဟုတ် Command Prompt တွင် အောက်ပါ command ကို ရိုက်ထည့်ပါ:
-
+### Composer ဖြင့် Project အသစ် ဆောက်ခြင်း:
 ```bash
-# syntax: composer create-project laravel/laravel <project-name>
 composer create-project laravel/laravel my-first-laravel
-```
-
-### (ခ) Project Folder ထဲသို့ ဝင်ရောက်ခြင်း
-```bash
 cd my-first-laravel
 ```
 
 ---
 
-## ၂။ Artisan CLI နှင့် ပထမဆုံး Local Server စတင် Run ခြင်း
+## ၂။ Artisan CLI ဆိုတာဘာလဲ?
 
-**Artisan** ဆိုသည်မှာ Laravel တွင် Built-in ပါဝင်သော Command-Line Interface (CLI) ဖြစ်ပြီး Boilerplate ကုဒ်များ ဆောက်ခြင်း၊ Database စီမံခြင်းနှင့် Server run ခြင်းတို့ကို အလွန်မြန်ဆန်စွာ လုပ်ဆောင်ပေးသည်။
+### (က) ဒါက ဘာလဲ? (What is it?)
+**Artisan** ဆိုသည်မှာ Laravel တွင် Built-in ပါဝင်သော Command-Line Interface (CLI) ဖြစ်ပြီး စနစ်တစ်ခုလုံးကို Terminal မှ ထိန်းချုပ်စေခိုင်းနိုင်သော လက်ထောက်ကိရိယာ ဖြစ်သည်။
+
+### (ခ) ဘာကြောင့် မဖြစ်မနေ အသုံးပြုရသလဲ? (Why use this feature?)
+Controller တစ်ခု၊ Model တစ်ခု သို့မဟုတ် Migration ဖိုင်တစ်ခု ဆောက်ရန်အတွက် Folder ထဲသွားပြီး ဖိုင်လက်ဖြင့်ဆောက်၊ Namespace လက်ဖြင့်ရိုက်၊ Class ရေးသားနေရပါက အချိန်ကုန်ပြီး စာလုံးပေါင်းမှားယွင်းမှုများ ဖြစ်စေသည်။ Artisan ဖြင့် စက္ကန့်ပိုင်းအတွင်း Boilerplate Code များကို တိကျစွာ ထုတ်လုပ်ပေးနိုင်သည်။
+
+### (ဂ) အသုံးပြုခြင်း၏ အားသာချက်များ (Advantages):
+* **Rapid Development**: `php artisan make:model Product -mcr` ဟု ရိုက်လိုက်ရုံဖြင့် Model, Migration, Controller, Resource အားလုံး ၅ စက္ကန့်အတွင်း အဆင်သင့် ဖြစ်သွားသည်။
+* **Database Automation**: Migration run ခြင်း၊ Rollback လုပ်ခြင်း၊ Seeder ဒေတာ ထည့်ခြင်းများကို ခလုတ်တစ်ချက်ဖြင့် လုပ်ဆောင်နိုင်သည်။
+* **Local Server**: Apache/Nginx မလိုဘဲ `php artisan serve` ဖြင့် Local Server ချက်ချင်း run နိုင်သည်။
 
 ```bash
-# Built-in Development Web Server စတင်ခြင်း
+# Local Development Web Server စတင်ခြင်း
 php artisan serve
 ```
 
-အောက်ပါအတိုင်း ပေါ်လာပါမည်:
-```
-INFO  Server running on [http://127.0.0.1:8000].
-Press Ctrl+C to stop the server
-```
-Browser တွင် `http://127.0.0.1:8000` သို့ သွားရောက်ကြည့်ပါက Laravel Welcome Page ကို စတင်တွေ့မြင်ရမည်ဖြစ်ပါသည်။
-
 ---
 
-## ၃။ Laravel Directory Structure အပြည့်အစုံ ရှင်းလင်းချက်
+## ၃။ Laravel Directory Structure အပြည့်အစုံ ရှင်းလင်းချက် (Function Sectors)
 
-Laravel ၏ Project Folder ဖွဲ့စည်းပုံသည် MVC စနစ်အရ အလွန်စနစ်ကျပါသည်။
+Laravel ၏ Directory Structure သည် MVC Architecture အပေါ်တွင် တည်ဆောက်ထားသောကြောင့် ကုဒ်များကို စနစ်တကျ အပိုင်းလိုက် ခွဲခြားသိမ်းဆည်းပေးသည်။
 
 ```
-my-first-laravel/
-├── app/                  # Application Core Logic (Models, Controllers, Middleware)
-├── bootstrap/            # Framework စတင် run ရန် Bootstrap ဖိုင်များ (app.php)
-├── config/               # App configuration ဖိုင်များ (database.php, mail.php, etc.)
-├── database/             # Migrations, Model Factories, Seeders များ
-├── public/               # Web Server ၏ Document Root (index.php, CSS, JS, Images)
-├── resources/            # Views (Blade templates), Raw CSS/JS (Vite assets)
-├── routes/               # URL Routing သတ်မှတ်ချက်များ (web.php, api.php, console.php)
-├── storage/              # Logs, Compiled templates, User uploaded files
-├── tests/                # Feature & Unit Testing ဖိုင်များ
-├── vendor/               # Composer dependencies များ
-├── .env                  # Environment Variables လျှို့ဝှက် config ဖိုင်
-├── composer.json         # PHP Packages စာရင်း
-├── package.json          # Node/NPM Packages စာရင်း (Vite, Tailwind, etc.)
-└── vite.config.js        # Frontend bundler configuration
+my-project/
+├── app/                  # Application Core (Controllers, Models, Middleware)
+├── bootstrap/            # App Bootstrapping (app.php)
+├── config/               # App Configuration Files
+├── database/             # Migrations, Seeders, Factories
+├── public/               # Document Root (index.php, CSS, JS, Images)
+├── resources/            # Views (Blade), CSS/JS
+├── routes/               # Routing files (web.php, api.php, console.php)
+├── storage/              # Logs, Uploads, Cache
+├── tests/                # Feature & Unit Tests
+├── vendor/               # Composer dependencies
+└── .env                  # Environment Variables
 ```
 
 ---
 
-### Folder တစ်ခုချင်းစီ၏ အသေးစိတ် တာဝန်များ:
-
-#### ၁။ `app/` Folder (အဓိက ဦးနှောက်)
-* `app/Http/Controllers/` : အသုံးပြုသူ၏ Request ကို လက်ခံပြီး Model/View သို့ ပို့ပေးသည့် Controllers များ။
-* `app/Models/` : Database Table တစ်ခုချင်းစီကို ကိုယ်စားပြုသော Eloquent Model Classes များ (ဥပမာ- `User.php`, `Product.php`)။
-* `app/Http/Middleware/` : Request ကို ကြားဖြတ်စစ်ဆေးပေးသည့် Logic များ (ဥပမာ- Admin ဟုတ်မဟုတ် စစ်ဆေးခြင်း)။
-* `app/Providers/` : Service Providers များ (AppServiceProvider, EventServiceProvider)။
-
-#### ၂။ `config/` Folder (စနစ် စီမံခန့်ခွဲမှု)
-Database settings, Authentication guards, Mail servers, Caching drivers စသည့် Application Configuration အားလုံးကို ဤနေရာတွင် စီမံသည်။
-
-#### ၃။ `database/` Folder (ဒေတာဘေ့စ် စီမံခန့်ခွဲမှု)
-* `database/migrations/` : Database Table များကို ကုဒ်ဖြင့် ဖန်တီးသော Version Control ဖိုင်များ။
-* `database/seeders/` : စမ်းသပ်ရန် သို့မဟုတ် Master Data ထည့်သွင်းပေးသောဖိုင်များ။
-* `database/factories/` : Faker ဒေတာများ အလိုအလျောက် ထုတ်လုပ်ပေးသော ဖိုင်များ။
-
-#### ၄။ `public/` Folder (အပြင်လောကနှင့် ထိတွေ့ရာနေရာ)
-* `index.php` သည် Web Traffic အားလုံး၏ ဝင်ပေါက်ဖြစ်သည်။
-* Compiled CSS, Javascript, ပုံရိပ်များနှင့် Static Assets များကို ဤနေရာတွင်သာ ထားရှိရသည်။
-
-#### ၅။ `resources/` Folder (အသုံးပြုသူ မြင်ကွင်း)
-* `resources/views/` : Blade Template HTML ဖိုင်များ (`.blade.php`) ထားရှိရာ နေရာ။
-* `resources/css/` နှင့် `resources/js/` : Vite ဖြင့် bundle လုပ်မည့် Frontend ကုဒ်များ။
-
-#### ၆။ `routes/` Folder (လမ်းကြောင်းများ)
-* `routes/web.php` : Browser ပေါ်တွင် ပြသမည့် စာမျက်နှာ Routes များ (Session, CSRF ပါဝင်သည်)။
-* `routes/api.php` : Mobile Apps သို့မဟုတ် Frontend Frameworks များအတွက် Stateless REST API Routes များ။
-* `routes/console.php` : Custom Artisan CLI Commands များ ရေးသားရာနေရာ။
-
-#### ၇။ `storage/` Folder (ယာယီနှင့် ဒေတာသိုလှောင်ရာ)
-* `storage/logs/laravel.log` : Error ဖြစ်တိုင်း မှတ်တမ်းဝင်သည့် Log ဖိုင်။
-* `storage/app/public/` : အသုံးပြုသူ တင်လိုက်သော ပုံများ၊ PDF ဖိုင်များ သိမ်းဆည်းရာနေရာ။
+### ၃.၁။ `app/` Directory (Core Business Logic)
+* **ဒါက ဘာလဲ**: Application ၏ အဓိက ဦးနှောက်ဖြစ်ပြီး ကုဒ်အများစု ရေးသားရသည့်နေရာ ဖြစ်သည်။
+* **ဘာကြောင့် သုံးရသလဲ**: Business Logic, Database Models နှင့် Middlewares များကို သီးခြားခွဲထုတ်ထားရန်။
+* **အစိတ်အပိုင်းများ**:
+  - `app/Http/Controllers/`: Request များကို လက်ခံပြီး Response ပြန်ပေးသော နေရာ။
+  - `app/Models/`: Database Tables များနှင့် ချိတ်ဆက်ထားသော Eloquent Models များ။
+  - `app/Http/Middleware/`: လုံခြုံရေး ကြားဖြတ်စစ်ဆေးပေးသည့် Filter များ။
 
 ---
 
-## ၄။ Environment Configuration (`.env`) ဖိုင်၏ အရေးကြီးပုံ
+### ၃.၂။ `config/` Directory (Centralized System Config)
+* **ဒါက ဘာလဲ**: Database ချိတ်ဆက်မှု၊ Mail server၊ Cache drivers၊ Authentication guards စသည့် System Configurations အားလုံး စုစည်းရာနေရာ ဖြစ်သည်။
+* **အားသာချက်**: Config တန်ဖိုးများကို ကုဒ်များထဲတွင် Hardcode မရေးဘဲ ဗဟိုမှ တစ်စုတစ်စည်းတည်း စီမံနိုင်ခြင်း။
 
-`.env` ဖိုင်သည် **Server တစ်ခုချင်းစီ၏ လျှို့ဝှက် Settings များကို သိမ်းဆည်းရာဖိုင်** ဖြစ်ပါသည်။
-*(သတိပြုရန်: ဤဖိုင်ကို Git repository ထဲသို့ commit လုံးဝ မထည့်ရပါ)*
+---
+
+### ၃.၃။ `database/` Directory (Database Management)
+* **ဒါက ဘာလဲ**: Database Schema ဇယားများနှင့် စမ်းသပ်ဒေတာများ စီမံရာနေရာ ဖြစ်သည်။
+* **အစိတ်အပိုင်းများ**:
+  - `database/migrations/`: Table များကို Version Control ဖြင့် တည်ဆောက်သော ဖိုင်များ။
+  - `database/seeders/`: အစမ်းဒေတာ သွင်းပေးသောဖိုင်များ။
+  - `database/factories/`: Faker ဒေတာ ထုတ်ပေးသောဖိုင်များ။
+
+---
+
+### ၃.၄။ `public/` Directory (Web Root)
+* **ဒါက ဘာလဲ**: Web Server (Nginx/Apache) နှင့် တိုက်ရိုက်ထိတွေ့သော တစ်ခုတည်းသော Folder ဖြစ်သည်။
+* **ဘာကြောင့် သုံးရသလဲ**: `.env` နှင့် Core ကုဒ်များကို ပြင်ပမှ တိုက်ရိုက် မလှမ်းနိုင်စေရန် လုံခြုံရေးအရ `public/` ကိုသာ ဝင်ပေါက်အဖြစ် ထားခြင်း ဖြစ်သည်။ Compiled CSS/JS, ပုံများနှင့် `index.php` သာ ရှိရမည်။
+
+---
+
+### ၃.၅။ `resources/` Directory (Presentation & Assets)
+* **ဒါက ဘာလဲ**: အသုံးပြုသူ မြင်တွေ့ရမည့် Blade HTML Templates များ (`resources/views/`) နှင့် Vite ဖြင့် Compile လုပ်မည့် Raw CSS/JS များ ထားရှိရာနေရာ ဖြစ်သည်။
+
+---
+
+### ၃.၆။ `routes/` Directory (Application Endpoints)
+* **ဒါက ဘာလဲ**: Application ၏ URL လမ်းကြောင်းများအားလုံးကို စီမံရာနေရာ ဖြစ်သည်။
+* **ခွဲခြားထားပုံ**:
+  - `web.php`: Browser UI စာမျက်နှာများအတွက် (Session, CSRF ပါဝင်သည်)။
+  - `api.php`: Mobile/React API များအတွက် (Stateless, Token-based)။
+  - `console.php`: Artisan CLI commands နှင့် Task Scheduling များအတွက်။
+
+---
+
+### ၃.၇။ `storage/` Directory (Logs & Uploaded Media)
+* **ဒါက ဘာလဲ**: အသုံးပြုသူ တင်လိုက်သော ပုံများ၊ Compiled Blade Templates များနှင့် Error Log များ သိမ်းဆည်းရာ နေရာ ဖြစ်သည်။
+* **အားသာချက်**: `storage/logs/laravel.log` တွင် စနစ်အတွင်း ဖြစ်ပွားသမျှ Error များကို အသေးစိတ် ခြေရာခံနိုင်သည်။
+
+---
+
+## ၄။ Environment Configuration (`.env`) ဖိုင်
+
+### (က) ဒါက ဘာလဲ? (What is it?)
+Server တစ်ခုချင်းစီ၏ လျှို့ဝှက်ချက် Settings များ (Database Passwords, App Key, AWS Credentials) ကို သီးသန့် သိမ်းဆည်းသော Configuration ဖိုင် ဖြစ်သည်။
+
+### (ခ) ဘာကြောင့် မဖြစ်မနေ အသုံးပြုရသလဲ?
+Developers အချင်းချင်း Local စက်တွင် သုံးသော Database Password နှင့် Live Production Server တွင် သုံးသော Password မတူညီပါ။ ကုဒ်ထဲတွင် Password ကို Hardcode ရေးလိုက်ပါက GitHub သို့ ရောက်သွားပြီး အလွန်အန္တရာယ် ကြီးမားသည်။
+
+### (ဂ) အားသာချက်များ:
+* **Security**: Git repository ထဲသို့ `.env` ဖိုင်ကို commit လုံးဝ မထည့်သဖြင့် လျှို့ဝှက်ချက်များ လုံခြုံသည်။
+* **Environment Switching**: Local, Staging, Production အပြောင်းအလဲများကို `.env` တစ်ခုတည်းဖြင့် လွယ်ကူစွာ လုပ်ဆောင်နိုင်သည်။
 
 ```ini
-# Application အမည်နှင့် Mode
 APP_NAME="Myanmar E-Commerce"
 APP_ENV=local
-APP_KEY=base64:3k7zW... # အရေးကြီးသော Encryption Key
-APP_DEBUG=true           # Local တွင်သာ true ထားရမည်၊ Live Server တွင် အမြဲ false ထားပါ
+APP_KEY=base64:3k7zW...
+APP_DEBUG=true
 APP_URL=http://127.0.0.1:8000
 
-# Database ချိတ်ဆက်မှု Setting
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=my_laravel_db
+DB_DATABASE=my_app_db
 DB_USERNAME=root
 DB_PASSWORD=secret
-
-# Session & Cache Driver
-SESSION_DRIVER=database
-QUEUE_CONNECTION=database
-CACHE_STORE=database
 ```
 
-> [!IMPORTANT]
-> ပရောဂျက်ကို clone ချပြီးစတွင် `.env.example` ကို `.env` အဖြစ် ကူးယူပြီး အောက်ပါ command ဖြင့် `APP_KEY` ကို အသစ်ထုတ်ပေးရပါသည်:
-> ```bash
-> cp .env.example .env
-> php artisan key:generate
-> ```
-
 ---
 
-## ၅။ အသုံးအများဆုံး Artisan Commands စာရင်း
+## ၅။ လုပ်ငန်းခွင်သုံး အသုံးအများဆုံး Artisan Commands စာရင်း
 
-| Command | လုပ်ဆောင်ချက် |
-| :--- | :--- |
-| `php artisan serve` | Development Local Web Server run ခြင်း |
-| `php artisan route:list` | Application တွင် ရှိသမျှ URL Routes များကို ဇယားဖြင့် ပြသခြင်း |
-| `php artisan make:controller [Name]` | Controller အသစ် ဆောက်ခြင်း |
-| `php artisan make:model [Name] -m` | Model နှင့်အတူ Migration ပါ တစ်ပြိုင်နက် ဆောက်ခြင်း |
-| `php artisan migrate` | ရေးဆွဲထားသော Database Migrations များကို run ခြင်း |
-| `php artisan make:request [Name]` | Form Validation Request class အသစ် ဆောက်ခြင်း |
-| `php artisan tinker` | Terminal ပေါ်တွင် Laravel ကုဒ်များကို Interactive စမ်းသပ် run ခြင်း |
-
----
-
-## ၆။ လက်တွေ့လေ့ကျင့်ရန် Lab Exercise
-
-1. သင့်ကွန်ပျူတာတွင် `composer create-project laravel/laravel my-blog` ဖြင့် Project တစ်ခု ဆောက်ပါ။
-2. `.env` ဖိုင်ထဲတွင် `APP_NAME="My Learning Blog"` ဟု ပြင်ဆင်ပါ။
-3. `php artisan serve` run ပြီး Browser တွင် `http://127.0.0.1:8000` ဖြင့် ဝင်ရောက်ကြည့်ရှုပါ။
-4. Terminal တွင် `php artisan --version` နှင့် `php artisan route:list` များကို ရိုက်နှိပ် စမ်းသပ်ကြည့်ပါ။
+| Command | ဘာကြောင့် သုံးရသလဲ (Why use it) | ရရှိမည့် အကျိုးကျေးဇူး (Advantage) |
+| :--- | :--- | :--- |
+| `php artisan serve` | Local Development Web Server စတင်ရန် | Apache/Nginx မလိုဘဲ ချက်ချင်း စမ်းသပ်နိုင်သည် |
+| `php artisan make:controller [Name]` | Controller ဖိုင် အသစ် ဆောက်ရန် | Namespace နှင့် Class တိကျစွာ အသင့်ထွက်လာသည် |
+| `php artisan make:model [Name] -m` | Model နှင့် Migration ပြိုင်တူ ဆောက်ရန် | အချိန်ကုန်သက်သာပြီး ချိတ်ဆက်ပြီးသား ရရှိသည် |
+| `php artisan migrate` | ရေးထားသော DB Schema များကို Database သို့ ထည့်ရန် | GUI ထဲ လက်ဖြင့် Table ဆောက်စရာမလိုတော့ပါ |
+| `php artisan route:list` | Application တွင် ရှိသမျှ URL အားလုံး စစ်ဆေးရန် | Routes ပျောက်ဆုံးခြင်း/မှားယွင်းခြင်း ရှာဖွေနိုင်သည် |
+| `php artisan tinker` | Terminal ပေါ်တွင် Laravel Code စမ်းသပ် Run ရန် | စမ်းသပ်ရန် Controller ရေးစရာမလိုဘဲ တိုက်ရိုက် စမ်းနိုင်သည် |

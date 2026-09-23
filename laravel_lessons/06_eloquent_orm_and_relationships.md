@@ -4,33 +4,34 @@
 ---
 
 ## 📌 မာတိကာ (Contents)
-1. [Eloquent ORM ဆိုတာဘာလဲ? (Active Record Pattern)](#၁-eloquent-orm-ဆိုတာဘာလဲ)
-2. [Eloquent Model ဖန်တီးခြင်းနှင့် အရေးကြီး Configuration များ](#၂-eloquent-model-ဖန်တီးခြင်းနှင့်-အရေးကြီး-configuration-များ)
+1. [Eloquent ORM ဆိုတာဘာလဲ? ဘာကြောင့် သုံးရသလဲ?](#၁-eloquent-orm-ဆိုတာဘာလဲ)
+2. [Model Configuration များ (`$fillable`, `$casts`, `$hidden`) ဘာကြောင့် သုံးရသလဲ?](#၂-model-configuration-များ)
 3. [Eloquent CRUD Operations (လက်တွေ့ Query ရေးသားနည်းများ)](#၃-eloquent-crud-operations)
-4. [Soft Deletes စနစ် (ဒေတာ အပြီးမပျက်ဘဲ သိမ်းဆည်းခြင်း)](#၄-soft-deletes-စနစ်)
-5. [Eloquent Relationships (ဇယားများ ဆက်သွယ်ခြင်း)](#၅-eloquent-relationships)
-6. [N+1 Query Problem ဆိုတာဘာလဲ? Eager Loading ဖြင့် ဖြေရှင်းပုံ](#၆-n1-query-problem-ဆိုတာဘာလဲ-eager-loading-ဖြင့်-ဖြေရှင်းပုံ)
-7. [Query Scopes နှင့် Accessors / Mutators](#၇-query-scopes-နှင့်-accessors--mutators)
+4. [Soft Deletes စနစ် (ဘာကြောင့် သုံးရသလဲ? အားသာချက်များ)](#၄-soft-deletes-စနစ်)
+5. [Eloquent Relationships (1:1, 1:N, N:N ဇယားများ ဆက်သွယ်ခြင်း)](#၅-eloquent-relationships)
+6. [N+1 Query Problem ဆိုတာဘာလဲ? Eager Loading ဖြင့် ဖြေရှင်းပုံ](#၆-n1-query-problem-ဆိုတာဘာလဲ)
+7. [Local Query Scopes နှင့် Accessors / Mutators](#၇-local-query-scopes-နှင့်-accessors--mutators)
 
 ---
 
 ## ၁။ Eloquent ORM ဆိုတာဘာလဲ?
 
-**Eloquent ORM (Object-Relational Mapper)** သည် Laravel တွင် ပါဝင်သော အစွမ်းထက်ဆုံး Feature တစ်ခု ဖြစ်သည်။ ၎င်းသည် **Active Record Architectural Pattern** ကို အသုံးပြုထားပြီး Database Table တစ်ခုချင်းစီကို PHP Class (Model) တစ်ခုအဖြစ် ပြောင်းလဲပေးသည်။
+### (က) ဒါက ဘာလဲ? (What is it?)
+**Eloquent ORM (Object-Relational Mapper)** သည် Laravel တွင် မူလပါဝင်သော Database Interaction Layer ဖြစ်သည်။ ၎င်းသည် **Active Record Pattern** ကို လိုက်နာထားပြီး Database Table တစ်ခုချင်းစီကို PHP Class (Model) တစ်ခုအဖြစ် ပြောင်းလဲပေးသည်။
 
-SQL Raw Query များ (ဥပမာ- `SELECT * FROM users WHERE status = 'active'`) ရေးသားစရာမလိုဘဲ Object Oriented ကုဒ်များဖြင့် ဒေတာများကို လွယ်ကူစွာ စီမံခန့်ခွဲနိုင်ပါသည်။
+### (ခ) ဘာကြောင့် မဖြစ်မနေ အသုံးပြုရသလဲ? (Why use this feature in real work?)
+Pure PHP တွင် `SELECT * FROM users WHERE status = 'active' ORDER BY created_at DESC` ကဲ့သို့သော SQL Raw Query များကို စာကြောင်းအရှည်ကြီး ရေးရပြီး SQL Injection အန္တရာယ် ရှိသည်။ Eloquent ဖြင့် Object Oriented ပုံစံ (`User::active()->latest()->get()`) ဖြင့် သန့်ရှင်းစွာ ရေးသားနိုင်သည်။
+
+### (ဂ) အသုံးပြုခြင်း၏ အားသာချက်များ (Advantages):
+* **Readability**: ကုဒ်ရေးသားရသည်မှာ အင်္ဂလိပ်စာဖတ်ရသကဲ့သို့ ရှင်းလင်းသည်။
+* **Automatic Security**: PDO Parameter Binding ကို အလိုအလျောက် အသုံးပြုထားသဖြင့် SQL Injection မှ ကာကွယ်ပေးသည်။
+* **Relationship Management**: Table များအကြား ချိတ်ဆက်မှုကို `JOIN` query ရှုပ်ထွေးစွာ ရေးစရာမလိုဘဲ Method တစ်ခုဖြင့် ဆွဲထုတ်နိုင်သည်။
 
 ---
 
-## ၂။ Eloquent Model ဖန်တီးခြင်းနှင့် အရေးကြီး Configuration များ
-
-```bash
-# Model တစ်ခု ဆောက်ခြင်း
-php artisan make:model Product
-```
+## ၂။ Model Configuration များ
 
 ```php
-// app/Models/Product.php
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -38,32 +39,27 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    use SoftDeletes; // deleted_at column ကို auto စီမံပေးသည်
+    use SoftDeletes; // Soft Deletes ထည့်သွင်းခြင်း
 
-    // မူလ Table အမည် (သတ်မှတ်မထားပါက products ဟု auto ယူသည်)
-    protected $table = 'products';
-
-    // Mass Assignment Protection: User တိုက်ရိုက် ထည့်ခွင့်ပြုမည့် Columns များ
+    // ၁။ $fillable: User ထံမှ တိုက်ရိုက် လက်ခံမည့် Column များ (Mass Assignment ကာကွယ်ရန်)
     protected $fillable = [
         'category_id',
         'title',
-        'slug',
         'price',
         'stock',
         'is_active',
     ];
 
-    // Array / JSON ပြောင်းသည့်အခါ ဖျောက်ထားမည့် Columns များ
+    // ၂။ $hidden: API JSON ပြောင်းသည့်အခါ လျှို့ဝှက်ချက် Column များကို မပါစေရန်
     protected $hidden = [
         'cost_price',
     ];
 
-    // Data Types များကို အလိုအလျောက် သင့်တော်သော PHP Type သို့ ပြောင်းပေးခြင်း
+    // ၃။ $casts: Database မှ လာသော Data ကို သင့်တော်သော PHP Type သို့ auto ပြောင်းပေးခြင်း
     protected $casts = [
-        'price'      => 'decimal:2',
-        'stock'      => 'integer',
-        'is_active'  => 'boolean',
-        'created_at' => 'datetime',
+        'price'     => 'decimal:2',
+        'stock'     => 'integer',
+        'is_active' => 'boolean',
     ];
 }
 ```
@@ -72,77 +68,46 @@ class Product extends Model
 
 ## ၃။ Eloquent CRUD Operations
 
-### (က) Create (ဒေတာ အသစ် ထည့်သွင်းခြင်း)
 ```php
-// နည်းလမ်း ၁: create() method (Mass Assignment)
+// ၁။ Create: အသစ်ထည့်သွင်းခြင်း
 $product = Product::create([
     'category_id' => 1,
-    'title'       => 'iPhone 15 Pro',
-    'price'       => 3800000,
-    'stock'       => 15,
+    'title'       => 'MacBook Air M3',
+    'price'       => 3500000,
+    'stock'       => 10,
 ]);
 
-// နည်းလမ်း ၂: Object save() method
-$product = new Product();
-$product->title = 'Samsung Galaxy S24';
-$product->price = 3500000;
-$product->save();
-```
-
-### (ခ) Read (ဒေတာများ ရှာဖွေရယူခြင်း)
-```php
-// အားလုံး ဆွဲထုတ်ခြင်း
-$allProducts = Product::all();
-
-// ID ဖြင့် ရှာခြင်း (မရှိပါက 404 Page ကို အလိုအလျောက် ပစ်ပေးသည်)
+// ၂။ Read: ရှာဖွေခြင်း (မရှိပါက 404 Page auto ပြပေးသည်)
 $product = Product::findOrFail($id);
+$featured = Product::where('price', '>', 500000)->where('is_active', true)->paginate(15);
 
-// Conditions များနှင့် စစ်ထုတ်ခြင်း
-$featuredProducts = Product::where('price', '>', 500000)
-                           ->where('is_active', true)
-                           ->orderBy('created_at', 'desc')
-                           ->take(5)
-                           ->get();
-
-// Pagination ဖြင့် စာမျက်နှာခွဲခြင်း (လုပ်ငန်းခွင်တွင် အမြဲသုံးသည်)
-$paginatedProducts = Product::latest()->paginate(15);
-```
-
-### (ဂ) Update (ဒေတာ ပြင်ဆင်ခြင်း)
-```php
+// ၃။ Update: ပြင်ဆင်ခြင်း
 $product = Product::findOrFail($id);
-$product->update([
-    'price' => 3600000,
-    'stock' => 10,
-]);
-```
+$product->update(['price' => 3400000]);
 
-### (ဃ) Delete (ဒေတာ ဖျက်ခြင်း)
-```php
+// ၄။ Delete: ဖျက်ခြင်း
 $product = Product::findOrFail($id);
-$product->delete(); // Soft delete ဖြစ်သွားသည်
-
-// ID ပေးပြီး တိုက်ရိုက်ဖျက်ခြင်း
-Product::destroy([1, 2, 3]);
+$product->delete();
 ```
 
 ---
 
 ## ၄။ Soft Deletes စနစ်
 
-Model တွင် `SoftDeletes` ထည့်ထားပါက `delete()` ခေါ်လိုက်သည့်အခါ Database ထဲမှ အပြီးတိုင် မပျက်သွားဘဲ `deleted_at` column တွင် လက်ရှိအချိန် တံဆိပ်ရိုက်သွားမည် ဖြစ်သည်။
+### (က) ဘာကြောင့် သုံးရသလဲ?
+Customer သို့မဟုတ် Admin က အရေးကြီးသော Order သို့မဟုတ် User အကောင့်ကို မတော်တဆ ဖျက်မိသည့်အခါ Database ထဲမှ အပြီးတိုင် ပျောက်ဆုံးမသွားစေဘဲ `deleted_at` တွင် အချိန်မှတ်သားထားရန် ဖြစ်သည်။
+
+### (ခ) အားသာချက်:
+အမှားပြင်ဆင်ပြီး `restore()` ဖြင့် အချိန်မရွေး ပြန်လည် အသက်သွင်းနိုင်သည်။
 
 ```php
-// ပုံမှန် Query လုပ်ပါက Soft-deleted record များ ပါမလာတော့ပါ
+// ပုံမှန် Query လုပ်ပါက Soft-deleted record များ မပါလာပါ
 $products = Product::all();
 
-// အမှိုက်ပုံးထဲ ရောက်နေသော ဒေတာများပါ ပြန်ဖတ်လိုပါက:
+// ဖျက်ထားသော ဒေတာများပါ ပြန်ဖတ်လိုပါက:
 $allWithTrash = Product::withTrashed()->get();
 
-// ဖျက်ထားသော ဒေတာ သီးသန့် ရှာလိုပါက:
-$trashedOnly = Product::onlyTrashed()->get();
-
-// အမှားပြင်ဆင်ပြီး ပြန်လည် အသက်သွင်းခြင်း (Restore):
+// အမှားပြင်ဆင်ပြီး ပြန်လည် အသက်သွင်းခြင်း:
 $product->restore();
 
 // Database ထဲမှ အပြီးတိုင် ဖျက်ပစ်ခြင်း:
@@ -154,7 +119,7 @@ $product->forceDelete();
 ## ၅။ Eloquent Relationships
 
 ### (က) One-to-Many (1:N)
-Category တစ်ခုတွင် Products များစွာ ရှိသည်။ Product တစ်ခုသည် Category တစ်ခုအောက်တွင်သာ ရှိသည်။
+Category တစ်ခုတွင် Products များစွာ ရှိသည်။ Product တစ်ခုသည် Category တစ်ခုအောက်တွင် ရှိသည်။
 
 ```php
 // app/Models/Category.php
@@ -167,12 +132,6 @@ public function products()
 public function category()
 {
     return $this->belongsTo(Category::class);
-}
-
-// သုံးစွဲပုံ:
-$category = Category::find(1);
-foreach ($category->products as $product) {
-    echo $product->title;
 }
 ```
 
@@ -187,51 +146,45 @@ public function products()
                 ->withPivot('quantity', 'unit_price')
                 ->withTimestamps();
 }
-
-// Attach လုပ်ခြင်း (Order ထဲ Product ထည့်ခြင်း):
-$order->products()->attach($productId, ['quantity' => 2, 'unit_price' => 1500]);
-
-// Sync လုပ်ခြင်း (Array အတိုင်းသာ ထားပြီး ကျန်တာ auto ဖြုတ်ခြင်း):
-$order->products()->sync([1 => ['quantity' => 1], 2 => ['quantity' => 3]]);
 ```
 
 ---
 
-## ၆။ N+1 Query Problem ဆိုတာဘာလဲ? Eager Loading ဖြင့် ဖြေရှင်းပုံ
+## ၆။ N+1 Query Problem ဆိုတာဘာလဲ?
 
-**N+1 Problem** သည် Laravel စတင်လေ့လာသူများ Database ကို အလွန်လေးလံစေသည့် အဓိက အမှားတစ်ခု ဖြစ်သည်။
+### (က) ဘာကြောင့် ဖြစ်ပွားရသလဲ?
+Loop ပတ်ပြီး Relationship ကို ခေါ်မိသဖြင့် Database Query ပေါင်း ရာနှင့်ချီ ခေါ်ယူကာ Server လေးလံသွားခြင်း (Lazy Loading Problem) ဖြစ်သည်။
 
 ```php
-// ❌ ဆိုးရွားသော ရေးသားမှု (Lazy Loading - N+1 Problem ဖြစ်သည်)
-$products = Product::all(); // Query (1) ကြိမ် run သည်
+// ❌ ညံ့ဖျင်းသော နည်းလမ်း (Queries ၁၀၁ ကြိမ် - Slow)
+$products = Product::all(); // Query 1 ကြိမ်
 foreach ($products as $product) {
-    echo $product->category->name; // Loop အကြိမ်တိုင်း DB သို့ Query 1 ခုစီ ထပ်ခေါ်သည် (N ကြိမ်)
+    echo $product->category->name; // Loop တိုင်းအတွက် Query 1 ခုစီ ထပ်ခေါ်သည် (N ကြိမ်)
 }
-// အကယ်၍ Product အခု ၁၀၀ ရှိပါက Database Query ပေါင်း ၁၀၁ ကြိမ် ထိခိုက်သွားပါမည်!
-```
 
-```php
-// ✅ အကောင်းဆုံး ရေးသားမှု (Eager Loading - with() အသုံးပြုခြင်း)
-$products = Product::with('category')->get(); // Query (၂) ကြိမ်သာ run သည်!
+// ✅ အလွန်မြန်ဆန်သော နည်းလမ်း (Eager Loading - Queries ၂ ကြိမ်သာ run သည်)
+$products = Product::with('category')->get();
 foreach ($products as $product) {
-    echo $product->category->name; // Memory ထဲမှသာ ချက်ချင်းယူသုံးသည်
+    echo $product->category->name; // Memory ထဲမှ ချက်ချင်းယူသုံးသည်
 }
 ```
 
 ---
 
-## ၇။ Query Scopes နှင့် Accessors / Mutators
+## ၇။ Local Query Scopes နှင့် Accessors / Mutators
 
 ### (က) Local Query Scopes (ထပ်ခါတလဲလဲ သုံးရသော Query များကို စုစည်းခြင်း)
+* **ဘာကြောင့် သုံးရသလဲ**: `where('is_active', true)->where('stock', '>', 0)` ကဲ့သို့ ရှည်လျားသော condition များကို Controller တိုင်းတွင် ထပ်ခါတလဲလဲ မရေးရစေရန်။
+
 ```php
 // app/Models/Product.php
-public function scopePopular($query)
+public function scopeAvailable($query)
 {
-    return $query->where('stock', '>', 0)->where('is_active', true);
+    return $query->where('is_active', true)->where('stock', '>', 0);
 }
 
-// Controller တွင် သန့်ရှင်းစွာ သုံးစွဲပုံ:
-$popularProducts = Product::popular()->latest()->get();
+// Controller တွင် သုံးစွဲပုံ:
+$products = Product::available()->latest()->get();
 ```
 
 ### (ခ) Accessors (Data ကို ဆွဲထုတ်ချိန်တွင် ပြုပြင်ပြသခြင်း)

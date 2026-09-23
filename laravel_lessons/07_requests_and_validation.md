@@ -4,18 +4,27 @@
 ---
 
 ## 📌 မာတိကာ (Contents)
-1. [Request Object ဆိုတာဘာလဲနှင့် Data ဖမ်းယူပုံများ](#၁-request-object-ဆိုတာဘာလဲနှင့်-data-ဖမ်းယူပုံများ)
-2. [Controller ထဲတွင် Inline Validation စစ်ဆေးခြင်း](#၂-controller-ထဲတွင်-inline-validation-စစ်ဆေးခြင်း)
-3. [Dedicated Form Request Class အသုံးပြုခြင်း (Enterprise Best Practice)](#၃-dedicated-form-request-class-အသုံးပြုခြင်း)
-4. [လုပ်ငန်းခွင်တွင် အသုံးအများဆုံး Validation Rules များ](#၄-လုပ်ငန်းခွင်တွင်-အသုံးအများဆုံး-validation-rules-များ)
-5. [မြန်မာလို Custom Error Messages ရေးသားသတ်မှတ်ခြင်း](#၅-မြန်မာလို-custom-error-messages-ရေးသားသတ်မှတ်ခြင်း)
-6. [Blade View နှင့် API JSON များတွင် Validation Errors ပြသပုံ](#၆-blade-view-နှင့်-api-json-များတွင်-validation-errors-ပြသပုံ)
+1. [Request Object ဆိုတာဘာလဲ? ဘာကြောင့် သုံးရသလဲ?](#၁-request-object-ဆိုတာဘာလဲ)
+2. [Input Data ဖမ်းယူခြင်း နည်းလမ်းများ (`only`, `except`, `filled`)](#၂-input-data-ဖမ်းယူခြင်း-နည်းလမ်းများ)
+3. [Controller ထဲတွင် Inline Validation စစ်ဆေးခြင်း](#၃-controller-ထဲတွင်-inline-validation-စစ်ဆေးခြင်း)
+4. [Dedicated Form Request Class အသုံးပြုခြင်း (ဘာကြောင့် သုံးရသလဲ? အားသာချက်များ)](#၄-dedicated-form-request-class-အသုံးပြုခြင်း)
+5. [လုပ်ငန်းခွင်တွင် အသုံးအများဆုံး Validation Rules များ](#၅-လုပ်ငန်းခွင်တွင်-အသုံးအများဆုံး-validation-rules-များ)
+6. [မြန်မာလို Custom Error Messages ရေးသားသတ်မှတ်ခြင်း](#၆-မြန်မာလို-custom-error-messages-ရေးသားသတ်မှတ်ခြင်း)
+7. [Blade View နှင့် API JSON များတွင် Validation Errors ပြသပုံ](#၇-blade-view-နှင့်-api-json-များတွင်-validation-errors-ပြသပုံ)
 
 ---
 
-## ၁။ Request Object ဆိုတာဘာလဲနှင့် Data ဖမ်းယူပုံများ
+## ၁။ Request Object ဆိုတာဘာလဲ?
 
-အသုံးပြုသူ Browser မှ Form submit လုပ်လိုက်သော ဒေတာများ၊ Query String (URL parameters) များနှင့် Headers များကို Laravel ၏ `Illuminate\Http\Request` Class ဖြင့် ဖမ်းယူရရှိနိုင်ပါသည်။
+### (က) ဒါက ဘာလဲ? (What is it?)
+`Illuminate\Http\Request` Object သည် အသုံးပြုသူ Browser မှ ပေးပို့လိုက်သော Form Inputs, Headers, Cookies, Uploaded Files နှင့် Client IP Address များကို စုစည်းပေးထားသော အရာဝတ္ထု (Object) ဖြစ်သည်။
+
+### (ခ) ဘာကြောင့် မဖြစ်မနေ အသုံးပြုရသလဲ? (Why use this feature?)
+Pure PHP ၏ `$_GET`, `$_POST`, `$_FILES` စသည့် Superglobals များသည် XSS/Sanitization ကာကွယ်မှု မပါရှိပါ။ Laravel Request Object သည် Input များကို စစ်ထုတ်ပြီး အလုံခြုံဆုံး API Interface ကို ပေးစွမ်းသည်။
+
+---
+
+## ၂။ Input Data ဖမ်းယူခြင်း နည်းလမ်းများ
 
 ```php
 namespace App\Http\Controllers;
@@ -26,42 +35,29 @@ class UserController extends Controller
 {
     public function store(Request $request)
     {
-        // ၁။ Input တန်ဖိုး တစ်ခုချင်း ဖမ်းယူခြင်း
-        $name = $request->input('name');
-        $email = $request->input('email', 'default@example.com'); // မပါလာပါက default တန်ဖိုး ယူမည်
+        // ၁။ တန်ဖိုး တစ်ခုချင်း ဖမ်းယူခြင်း (Default Value ပါဝင်သည်)
+        $name = $request->input('name', 'Anonymous');
 
-        // ၂။ အားလုံးကို Array ဖြင့် ရယူခြင်း
-        $allData = $request->all();
-
-        // ၃။ သီးသန့် လိုအပ်သော Field သာ ရွေးထုတ်ယူခြင်း (အလွန် လုံခြုံသည်)
+        // ၂။ လိုအပ်သော Field သာ သီးသန့် ရွေးယူခြင်း (အလွန် လုံခြုံသည်)
         $userData = $request->only(['name', 'email', 'phone']);
 
-        // ၄။ မလိုချင်သော Field များကို ချန်လှပ်ယူခြင်း
+        // ၃။ မလိုလားအပ်သော Token များကို ဖယ်ချန်ယူခြင်း
         $cleanData = $request->except(['_token', 'password_confirmation']);
 
-        // ၅။ Field ပါမပါ စစ်ဆေးခြင်း
-        if ($request->has('newsletter')) {
-            // Field ပါဝင်သည် (တန်ဖိုး null ဖြစ်နေရင်လည်း true)
-        }
-        if ($request->filled('username')) {
-            // Field ပါဝင်ပြီး တန်ဖိုး ကွက်လပ်မဟုတ်မှသာ true
+        // ၄။ Field ပါဝင်ပြီး ကွက်လပ်မဟုတ်မှသာ true ဖြစ်ခြင်း
+        if ($request->filled('promo_code')) {
+            // Promo code ထည့်သွင်းထားသည်
         }
 
-        // ၆။ URL Query String ဖမ်းယူခြင်း (e.g. ?page=2&sort=asc)
-        $page = $request->query('page', 1);
-
-        // ၇။ IP Address နှင့် User Agent ရယူခြင်း
-        $ip = $request->ip();
-        $userAgent = $request->userAgent();
+        // ၅။ IP Address ရယူခြင်း
+        $clientIp = $request->ip();
     }
 }
 ```
 
 ---
 
-## ၂။ Controller ထဲတွင် Inline Validation စစ်ဆေးခြင်း
-
-ဒေတာ မသိမ်းဆည်းမီ မဖြစ်မနေ အချက်အလက် မှန်/မမှန် စစ်ဆေးရပါသည်:
+## ၃။ Controller ထဲတွင် Inline Validation စစ်ဆေးခြင်း
 
 ```php
 public function register(Request $request)
@@ -69,26 +65,32 @@ public function register(Request $request)
     $validated = $request->validate([
         'name'     => 'required|string|max:50',
         'email'    => 'required|email|unique:users,email',
-        'password' => 'required|min:8|confirmed', // password_confirmation နှင့် တိုက်စစ်သည်
-        'age'      => 'nullable|integer|min:18',
+        'password' => 'required|min:8|confirmed',
     ]);
 
-    // Validation ကျရှုံးပါက အောက်ကုဒ်များ ဆက်မ run တော့ဘဲ မူလ စာမျက်နှာသို့ Error များနှင့်အတူ အလိုအလျောက် ပြန်ပို့ပေးသည်
     User::create($validated);
-
     return redirect()->route('home')->with('success', 'အကောင့်ဖွင့်ခြင်း အောင်မြင်ပါသည်');
 }
 ```
 
 ---
 
-## ၃။ Dedicated Form Request Class အသုံးပြုခြင်း
+## ၄။ Dedicated Form Request Class အသုံးပြုခြင်း
 
-Controller ထဲတွင် Validation Rules များ များပြားလာပါက Controller ဖိုင်သည် ကြီးမားရှုပ်ထွေးလာသည်။ ထို့ကြောင့် **Form Request** သီးသန့် Class ခွဲထုတ်ခြင်းသည် လုပ်ငန်းခွင် စံသတ်မှတ်ချက် (Best Practice) ဖြစ်သည်။
+### (က) ဒါက ဘာလဲ? (What is it?)
+Validation Rules များကို Controller ထဲတွင် မရေးဘဲ သီးသန့် Request Class တစ်ခုအဖြစ် ခွဲထုတ်ရေးသားသော စနစ်ဖြစ်သည်။
 
 ```bash
 php artisan make:request StoreProductRequest
 ```
+
+### (ခ) ဘာကြောင့် မဖြစ်မနေ အသုံးပြုရသလဲ? (Why use this feature in real work?)
+Controller ထဲတွင် Validation Rules များ ပြည့်နှက်နေပါက Controller သည် ကြီးမားရှုပ်ထွေးလာသည် (Fat Controller)။ Form Request ခွဲထုတ်လိုက်ပါက Controller သည် လိုင်း ၃ ကြောင်းဖြင့် အလွန်သန့်ရှင်းသွားသည်။
+
+### (ဂ) အသုံးပြုခြင်း၏ အားသာချက်များ (Advantages):
+* **Automatic Validation**: Controller သို့ မရောက်မီ Validation အလိုအလျောက် စစ်ဆေးပြီး ဖြစ်သည်။
+* **Reusability**: Request Class တစ်ခုတည်းကို Web Form ရော REST API တွင်ပါ ပြန်လည်အသုံးပြုနိုင်သည်။
+* **Custom Error Messages**: မြန်မာလို အသိပေးစာများကို စနစ်တကျ ခွဲထုတ်ရေးသားနိုင်သည်။
 
 ```php
 // app/Http/Requests/StoreProductRequest.php
@@ -98,21 +100,18 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreProductRequest extends FormRequest
 {
-    // ၁။ ဤ Form ကို ပို့ခွင့်ရှိ/မရှိ စစ်ဆေးခြင်း (Authorization)
     public function authorize(): bool
     {
-        // ဥပမာ- Admin ဖြစ်မှသာ Product သွင်းခွင့်ပြုမည်
-        return true; 
+        return true; // ခွင့်ပြုချက် စစ်ဆေးခြင်း
     }
 
-    // ၂။ Validation စည်းကမ်းချက်များ
     public function rules(): array
     {
         return [
             'category_id' => ['required', 'exists:categories,id'],
             'title'       => ['required', 'string', 'max:255'],
             'price'       => ['required', 'numeric', 'min:0'],
-            'image'       => ['nullable', 'image', 'mimes:jpeg,png,webp', 'max:2048'], // 2MB Max
+            'image'       => ['nullable', 'image', 'mimes:jpeg,png,webp', 'max:2048'],
         ];
     }
 }
@@ -122,8 +121,8 @@ class StoreProductRequest extends FormRequest
 ```php
 public function store(StoreProductRequest $request)
 {
-    // Request ကို Inject လုပ်ထားရုံဖြင့် Validation အလိုအလျောက် စစ်ပြီးသား ဖြစ်သည်
-    $product = Product::create($request->validated());
+    // $request->validated() သည် စည်းကမ်းချက်နှင့် ကိုက်ညီသော ဒေတာများကိုသာ ပြန်ပေးသည်
+    Product::create($request->validated());
 
     return redirect()->route('products.index');
 }
@@ -131,26 +130,21 @@ public function store(StoreProductRequest $request)
 
 ---
 
-## ၄။ လုပ်ငန်းခွင်တွင် အသုံးအများဆုံး Validation Rules များ
+## ၅။ လုပ်ငန်းခွင်တွင် အသုံးအများဆုံး Validation Rules များ
 
-| Rule | အဓိပ္ပာယ်နှင့် အသုံးပြုပုံ |
-| :--- | :--- |
-| `required` | ကွက်လပ် လုံးဝ မဖြစ်ရပါ (မဖြစ်မနေ ထည့်ရမည်) |
-| `nullable` | တန်ဖိုး မထည့်ဘဲ ကွက်လပ်ထားခွင့်ပြုသည် |
-| `email` | မှန်ကန်သော Email format ဖြစ်ရမည် |
-| `unique:table,column` | Database table ထဲတွင် တန်ဖိုး ထပ်နေ၍ မရပါ (e.g. `unique:users,email`) |
-| `exists:table,column` | Database table ထဲတွင် အဆိုပါ ID/တန်ဖိုး အမှန်တကယ် ရှိနေရမည် |
-| `confirmed` | Form တွင် `field_confirmation` (ဥပမာ password_confirmation) နှင့် တန်ဖိုးတူရမည် |
-| `min:value` / `max:value` | String ဆိုလျှင် စာလုံးရေ အနည်း/အများ၊ Number ဆိုလျှင် တန်ဖိုး ပမာဏ |
-| `numeric` / `integer` | ဂဏန်း သီးသန့် ဖြစ်ရမည် |
-| `image` | ပုံဖိုင် (jpg, jpeg, png, bmp, gif, svg, webp) သာ ဖြစ်ရမည် |
-| `mimes:pdf,docx` | သတ်မှတ်ထားသော ဖိုင် extension သာ ဖြစ်ရမည် |
+| Rule | ဘာကြောင့် သုံးရသလဲ (Why use it) | ဥပမာ ကုဒ် |
+| :--- | :--- | :--- |
+| `required` | ကွက်လပ် လုံးဝ မဖြစ်စေရန် | `'name' => 'required'` |
+| `email` | မှန်ကန်သော Email format စစ်ရန် | `'email' => 'required\|email'` |
+| `unique:table,col` | DB ထဲတွင် Email/Phone ထပ်မနေစေရန် | `'email' => 'unique:users,email'` |
+| `exists:table,col` | ရွေးထားသော ID သည် DB ထဲ အမှန်ရှိရန် | `'category_id' => 'exists:categories,id'` |
+| `confirmed` | password နှင့် confirmation တူမတူ စစ်ရန် | `'password' => 'required\|confirmed'` |
+| `image` | Malicious script မဟုတ်ဘဲ ပုံအစစ် စစ်ရန် | `'avatar' => 'image\|mimes:jpg,png'` |
+| `max:kb` | File အရွယ်အစား ကန့်သတ်ရန် | `'photo' => 'max:2048'` (2MB Max) |
 
 ---
 
-## ၅။ မြန်မာလို Custom Error Messages ရေးသားသတ်မှတ်ခြင်း
-
-Form Request ဖိုင်ထဲတွင် `messages()` method ကို override လုပ်၍ မြန်မာဘာသာဖြင့် သတိပေးစာများ ရေးသားနိုင်ပါသည်:
+## ၆။ မြန်မာလို Custom Error Messages ရေးသားသတ်မှတ်ခြင်း
 
 ```php
 public function messages(): array
@@ -159,46 +153,33 @@ public function messages(): array
         'category_id.required' => 'ကုန်ပစ္စည်း အမျိုးအစား ရွေးချယ်ပေးရန် လိုအပ်ပါသည်။',
         'category_id.exists'   => 'ရွေးချယ်ထားသော အမျိုးအစား မရှိပါ။',
         'title.required'       => 'ကုန်ပစ္စည်း အမည် ထည့်သွင်းပေးပါ။',
-        'title.max'            => 'အမည်သည် စာလုံးရေ ၂၅၅ ထက် မကျော်ရပါ။',
         'price.required'       => 'ဈေးနှုန်း ထည့်သွင်းပေးပါ။',
         'price.numeric'        => 'ဈေးနှုန်းသည် ဂဏန်း ဖြစ်ရပါမည်။',
         'image.image'          => 'ပုံဖိုင်သာ တင်ပေးရပါမည်။',
-        'image.max'            => 'ပုံဖိုင် အရွယ်အစားသည် 2MB ထက် မကြီးရပါ။',
     ];
 }
 ```
 
 ---
 
-## ၆။ Blade View နှင့် API JSON များတွင် Validation Errors ပြသပုံ
+## ၇။ Blade View နှင့် API JSON များတွင် Validation Errors ပြသပုံ
 
-### (က) Blade Template ထဲတွင် ပြသပုံ:
+### (က) Blade Template ထဲတွင်:
 ```html
-<div class="form-group">
-    <label for="title">ပစ္စည်းအမည်:</label>
-    {{-- old('title') ဖြင့် ယခင် ရိုက်ထည့်ခဲ့သော စာသားကို ပြန်ထိန်းထားပေးသည် --}}
-    <input type="text" name="title" id="title" value="{{ old('title') }}" 
-           class="@error('title') is-invalid @enderror">
+<input type="text" name="title" value="{{ old('title') }}" 
+       class="@error('title') is-invalid @enderror">
 
-    {{-- Error Message သီးသန့် ပြသခြင်း --}}
-    @error('title')
-        <div class="text-danger">{{ $message }}</div>
-    @enderror
-</div>
+@error('title')
+    <span class="text-danger">{{ $message }}</span>
+@enderror
 ```
 
-### (ခ) RESTful API တွင် အလိုအလျောက် တုံ့ပြန်ပုံ (HTTP 422 Unprocessable Entity):
-API Route ဖြစ်ပါက Laravel က အောက်ပါ JSON ပုံစံဖြင့် Status 422 ဖြင့် အလိုအလျောက် ပြန်ပေးသည်:
+### (ခ) RESTful API တွင် Auto Response (HTTP 422 Unprocessable Entity):
 ```json
 {
-  "message": "ကုန်ပစ္စည်း အမည် ထည့်သွင်းပေးပါ။ (and 1 other error)",
+  "message": "ကုန်ပစ္စည်း အမည် ထည့်သွင်းပေးပါ။",
   "errors": {
-    "title": [
-      "ကုန်ပစ္စည်း အမည် ထည့်သွင်းပေးပါ။"
-    ],
-    "price": [
-      "ဈေးနှုန်း ထည့်သွင်းပေးပါ။"
-    ]
+    "title": ["ကုန်ပစ္စည်း အမည် ထည့်သွင်းပေးပါ။"]
   }
 }
 ```

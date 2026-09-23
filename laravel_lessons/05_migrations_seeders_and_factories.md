@@ -4,31 +4,34 @@
 ---
 
 ## 📌 မာတိကာ (Contents)
-1. [Database Migration ဆိုတာဘာလဲ? (Version Control for Database)](#၁-database-migration-ဆိုတာဘာလဲ)
+1. [Database Migration ဆိုတာဘာလဲ? ဘာကြောင့် သုံးရသလဲ?](#၁-database-migration-ဆိုတာဘာလဲ)
 2. [Migration ဖိုင်တစ်ခု၏ ဖွဲ့စည်းပုံ (`up` နှင့် `down`)](#၂-migration-ဖိုင်တစ်ခု၏-ဖွဲ့စည်းပုံ)
 3. [Column Types များနှင့် Modifiers များ](#၃-column-types-များနှင့်-modifiers-များ)
-4. [Foreign Key Relationships နှင့် Cascading Rules](#၄-foreign-key-relationships-နှင့်-cascading-rules)
+4. [Foreign Key Relationships နှင့် Cascading Rules (ဘာကြောင့် သုံးရသလဲ?)](#၄-foreign-key-relationships-နှင့်-cascading-rules)
 5. [ရှိပြီးသား Table တွင် Column အသစ် ထပ်တိုးခြင်း (Safe Migration)](#၅-ရှိပြီးသား-table-တွင်-column-အသစ်-ထပ်တိုးခြင်း)
-6. [Seeders နှင့် Model Factories (Faker ဖြင့် Dummy Data ထည့်သွင်းခြင်း)](#၆-seeders-နှင့်-model-factories)
+6. [Seeders နှင့် Model Factories (Faker ဖြင့် Dummy Data သွင်းခြင်း)](#၆-seeders-နှင့်-model-factories)
 7. [မကြာခဏသုံးရသော Artisan Database Commands](#၇-မကြာခဏသုံးရသော-artisan-database-commands)
 
 ---
 
 ## ၁။ Database Migration ဆိုတာဘာလဲ?
 
-**Database Migration** ဆိုသည်မှာ Database GUI (phpMyAdmin/Navicat) ထဲတွင် Table များကို လက်ဖြင့် ဆောက်မည့်အစား **PHP ကုဒ်များဖြင့် Version Control ပြုလုပ်ကာ Database Schema ကို တည်ဆောက်ခြင်း** ဖြစ်ပါသည်။
+### (က) ဒါက ဘာလဲ? (What is it?)
+**Database Migration** ဆိုသည်မှာ Database GUI (phpMyAdmin/DBeaver) ထဲတွင် Table များကို လက်ဖြင့် ဆောက်မည့်အစား **PHP ကုဒ်များဖြင့် Version Control ပြုလုပ်ကာ Database Schema ကို တည်ဆောက်ပြင်ဆင်သော စနစ်** ဖြစ်ပါသည်။
 
-### Migration အသုံးပြုခြင်း၏ အကျိုးကျေးဇူးများ:
-1. **Team Collaboration**: အဖွဲ့သားတစ်ဦးက Table သို့မဟုတ် Column အသစ် ထပ်တိုးလိုက်ပါက `php artisan migrate` run လိုက်ရုံဖြင့် အခြား အဖွဲ့သားအားလုံးထံတွင် Database structure အတူတူ ချက်ချင်း ဖြစ်သွားသည်။
-2. **Rollback ပြုလုပ်နိုင်ခြင်း**: အမှားတစ်ခုခုပါသွားပါက နောက်ဆုံး ပြုလုပ်ခဲ့သော အပြောင်းအလဲကို အလွယ်တကူ ပြန်ဖျက်နိုင်သည်။
-3. **Database Agnostic**: MySQL, PostgreSQL, SQLite, SQL Server စသည့် မည်သည့် Database Engine ကိုမဆို ကုဒ်မပြောင်းဘဲ ချိတ်ဆက်အသုံးပြုနိုင်သည်။
+### (ခ) ဘာကြောင့် မဖြစ်မနေ အသုံးပြုရသလဲ? (Why use this feature in real work?)
+အဖွဲ့သား (၅) ယောက်ဖြင့် Project ရေးသားသည့်အခါ Developer A က Table အသစ် သို့မဟုတ် Column အသစ် လက်ဖြင့် ထည့်လိုက်ပါက အခြား Developer ၄ ယောက်ထံတွင် ထို Column မရှိသဖြင့် Error များ တက်လာသည်။ Migration သုံးထားပါက `php artisan migrate` ဟု ရိုက်လိုက်ရုံဖြင့် အဖွဲ့သားအားလုံးထံတွင် Database structure အတူတူ ချက်ချင်း ဖြစ်သွားသည်။
+
+### (ဂ) အသုံးပြုခြင်း၏ အားသာချက်များ (Advantages):
+* **Database Agnostic**: MySQL, PostgreSQL, SQLite, SQL Server စသည့် မည်သည့် Database စနစ်မဆို Code မပြောင်းဘဲ ချိတ်ဆက်နိုင်သည်။
+* **Rollback Capability**: အမှားတစ်ခုခုပါသွားပါက နောက်ဆုံး ပြုလုပ်ခဲ့သော အပြောင်းအလဲကို `migrate:rollback` ဖြင့် စက္ကန့်ပိုင်းအတွင်း ပြန်ဖျက်နိုင်သည်။
+* **Automated CI/CD**: Live Server ပေါ်သို့ Code တင်တိုင်း Database Schema ပြောင်းလဲမှုများကို command တစ်ကြောင်းတည်းဖြင့် auto update လုပ်ပေးနိုင်သည်။
 
 ---
 
 ## ၂။ Migration ဖိုင်တစ်ခု၏ ဖွဲ့စည်းပုံ
 
 ```bash
-# Migration အသစ် ဖန်တီးခြင်း
 php artisan make:migration create_categories_table
 ```
 
@@ -65,36 +68,31 @@ return new class extends Migration {
 
 ## ၃။ Column Types များနှင့် Modifiers များ
 
-### (က) အသုံးများသော Column Types:
-| Method | MySQL Data Type | ဖော်ပြချက် |
+| Column Method | SQL Data Type | မည်သည့်အခါတွင် သုံးသလဲ |
 | :--- | :--- | :--- |
-| `$table->string('title', 255)` | `VARCHAR(255)` | စာတိုများ (အမည်၊ ခေါင်းစဉ်) |
-| `$table->text('body')` | `TEXT` | စာရှည်များ (ဆောင်းပါး၊ မှတ်ချက်) |
-| `$table->integer('votes')` | `INT` | ကိန်းပြည့် ဂဏန်းများ |
-| `$table->decimal('price', 12, 2)` | `DECIMAL(12,2)` | ငွေကြေး ပမာဏ (အပြည့် ၁၂ လုံး၊ ဒဿမ ၂ လုံး) |
-| `$table->boolean('is_published')`| `TINYINT(1)` | True / False တန်ဖိုး |
-| `$table->json('settings')` | `JSON` | JSON ဒေတာများ သိမ်းဆည်းရန် |
-| `$table->date('birth_date')` | `DATE` | နေ့စွဲ (YYYY-MM-DD) |
-| `$table->softDeletes()` | `TIMESTAMP` | `deleted_at` column ထည့်သွင်းခြင်း |
-
-### (ခ) အသုံးများသော Column Modifiers:
-* `->nullable()` : ကွက်လပ်ထားခွင့်ပြုခြင်း။
-* `->default($value)` : မူလသတ်မှတ်တန်ဖိုး။
-* `->unique()` : တန်ဖိုး ထပ်မနေစေရန် ကာကွယ်ခြင်း။
-* `->index()` : Query ရှာဖွေမှု ပိုမြန်စေရန် Index သတ်မှတ်ခြင်း။
+| `$table->string('title', 255)` | `VARCHAR(255)` | အမည်၊ ခေါင်းစဉ် စသည့် စာတိုများ |
+| `$table->text('body')` | `TEXT` | ဆောင်းပါး၊ မှတ်ချက် စသည့် စာရှည်များ |
+| `$table->integer('stock')` | `INT` | ကိန်းပြည့် ဂဏန်းများ |
+| `$table->decimal('price', 12, 2)` | `DECIMAL(12,2)` | ငွေကြေး ပမာဏ (ဒဿမ တိကျမှု လိုအပ်သောအခါ) |
+| `$table->boolean('is_published')` | `TINYINT(1)` | True / False Toggle သတ်မှတ်ချက်များ |
+| `$table->json('settings')` | `JSON` | Dynamic Settings/Attributes သိမ်းဆည်းရန် |
+| `$table->softDeletes()` | `TIMESTAMP` | `deleted_at` (အပြီးမပျက်ဘဲ သိမ်းရန်) |
 
 ---
 
 ## ၄။ Foreign Key Relationships နှင့် Cascading Rules
 
-Table (၂) ခု ချိတ်ဆက်ရာတွင် Foreign Key သတ်မှတ်ရန် Laravel တွင် အလွန်ရှင်းလင်းသော syntax ရှိပါသည်:
+### (က) ဘာကြောင့် သုံးရသလဲ?
+Table (၂) ခုအကြား Data Integrity (ဒေတာ ခိုင်မာမှု) ရှိစေရန်နှင့် မိဘ Table မှ Data ပျက်သွားပါက သားသမီး Data များ Database ထဲတွင် အမှိုက်အဖြစ် ကျန်မနေစေရန် (Orphaned records မဖြစ်စေရန်) သုံးသည်။
+
+### (ခ) အားသာချက် (Cascade Delete):
+Category တစ်ခုကို ဖျက်လိုက်ပါက ၎င်းအောက်ရှိ Products များကို တစ်ခုချင်း လိုက်ဖျက်စရာမလိုဘဲ Database က auto cascade ဖျက်ပေးသည်။
 
 ```php
 Schema::create('products', function (Blueprint $table) {
     $table->id();
     
-    // categories table ၏ id column နှင့် ချိတ်ဆက်ခြင်း
-    // အကယ်၍ category ဖျက်လိုက်ပါက ၎င်းနှင့်ဆိုင်သော products အားလုံး အလိုအလျောက် ပျက်သွားမည် (cascadeOnDelete)
+    // categories table ၏ id နှင့် ချိတ်ဆက်ခြင်း
     $table->foreignId('category_id')
           ->constrained('categories')
           ->cascadeOnDelete();
@@ -107,9 +105,10 @@ Schema::create('products', function (Blueprint $table) {
 
 ---
 
-## ၅။ ရှိပြီးသား Table တွင် Column အသစ် ထပ်တိုးခြင်း
+## ၅။ ရှိပြီးသား Table တွင် Column အသစ် ထပ်တိုးခြင်း (Safe Migration)
 
-Production ရှိပြီးသား ဒေတာများ မပျက်စီးစေရန် Table ကို အသစ်ပြန်မဖျက်ဘဲ သီးသန့် migration တစ်ခု ထပ်ဆောက်ရပါသည်:
+### (က) ဘာကြောင့် သီးသန့် Migration ဆောက်ရသလဲ?
+Production ရှိပြီးသား ဒေတာများ မပျက်စီးစေရန် Table ကို အသစ်ပြန်မဖျက်ဘဲ `Schema::table()` ဖြင့် Column အသစ် ထပ်ထည့်ရသည်။
 
 ```bash
 php artisan make:migration add_phone_to_users_table --table=users
@@ -120,7 +119,6 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // email နောက်တွင် phone column ကို ထည့်သွင်းမည်
             $table->string('phone', 20)->nullable()->after('email');
         });
     }
@@ -128,7 +126,6 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // rollback လုပ်ပါက phone column ကို ဖျက်မည်
             $table->dropColumn('phone');
         });
     }
@@ -139,7 +136,9 @@ return new class extends Migration {
 
 ## ၆။ Seeders နှင့် Model Factories
 
-### (က) Model Factory ဖြင့် Dummy Data တည်ဆောက်ခြင်း
+### (က) ဒါက ဘာလဲ? ဘာကြောင့် သုံးရသလဲ?
+စနစ်တစ်ခုကို စမ်းသပ်ရန် UI Form မှနေ၍ Product ၁၀၀/၁၀၀၀ ကို လက်ဖြင့် ထိုင်ဖြည့်နေရပါက ရက်ပေါင်းများစွာ အချိန်ကုန်မည်။ **Factory & Faker** ဖြင့် စက္ကန့်ပိုင်းအတွင်း ဒေတာ အစစ်နီးပါး Fake Data ပေါင်း သောင်းချီ ထည့်သွင်းနိုင်သည်။
+
 ```bash
 php artisan make:factory ProductFactory --model=Product
 ```
@@ -162,25 +161,17 @@ class ProductFactory extends Factory
             'slug'        => Str::slug($name),
             'price'       => fake()->numberBetween(5000, 100000),
             'description' => fake()->paragraph(),
-            'is_active'   => fake()->boolean(80), // 80% chance true
+            'is_active'   => fake()->boolean(80),
         ];
     }
 }
 ```
 
-### (ခ) DatabaseSeeder တွင် ခေါ်ယူခြင်း
 ```php
 // database/seeders/DatabaseSeeder.php
 public function run(): void
 {
-    // Admin User တစ်ယောက် မဖြစ်မနေ ထည့်မည်
-    \App\Models\User::factory()->create([
-        'name'  => 'Super Admin',
-        'email' => 'admin@gmail.com',
-        'role'  => 'admin',
-    ]);
-
-    // Dummy Products အခု ၅၀ ထည့်သွင်းမည်
+    // Fake Products အခု ၅၀ ထည့်သွင်းမည်
     \App\Models\Product::factory(50)->create();
 }
 ```
@@ -189,11 +180,9 @@ public function run(): void
 
 ## ၇။ မကြာခဏသုံးရသော Artisan Database Commands
 
-| Command | အဓိပ္ပာယ်နှင့် အသုံးပြုပုံ |
+| Command | ဘာကြောင့် သုံးရသလဲ (Why use it) |
 | :--- | :--- |
-| `php artisan migrate` | မ run ရသေးသော migration ဖိုင်များကို execute လုပ်ခြင်း |
-| `php artisan migrate:status` | မည်သည့် migration များ ပြီးဆုံးပြီး မည်သည့်အရာများ ကျန်ရှိနေသေးကြောင်း စစ်ဆေးခြင်း |
-| `php artisan migrate:rollback` | နောက်ဆုံး run ခဲ့သော migration အသုတ် (batch) ကို ပြန်ဖျက်ခြင်း |
-| `php artisan migrate:fresh` | Table အားလုံးကို Drop ချပြီး အစမှ အသစ်ပြန် run ခြင်း (သတိ: Data အားလုံး ပျက်မည်) |
-| `php artisan migrate:fresh --seed` | Table အားလုံး ပြန်ဆောက်ပြီး Fake Seeder Data ပါ တစ်ခါတည်း သွင်းပေးခြင်း |
-| `php artisan db:seed` | Seeder များကို သီးသန့် run ခြင်း |
+| `php artisan migrate` | ရေးထားသော migration ဖိုင်များကို execute လုပ်ရန် |
+| `php artisan migrate:status` | မည်သည့် migration များ ပြီးဆုံးပြီး မည်သည့်အရာများ ကျန်ရှိနေသေးကြောင်း စစ်ဆေးရန် |
+| `php artisan migrate:rollback` | နောက်ဆုံး run ခဲ့သော migration batch ကို အမှားပြင် ပြန်ဖျက်ရန် |
+| `php artisan migrate:fresh --seed` | Table အားလုံး ပြန်ဆောက်ပြီး Fake Data ပါ တစ်ခါတည်း သွင်းရန် |

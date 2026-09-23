@@ -4,11 +4,11 @@
 ---
 
 ## 📌 မာတိကာ (Contents)
-1. [Blade Template Engine ဆိုတာဘာလဲ?](#၁-blade-template-engine-ဆိုတာဘာလဲ)
+1. [Blade Template Engine ဆိုတာဘာလဲ? ဘာကြောင့် သုံးရသလဲ?](#၁-blade-template-engine-ဆိုတာဘာလဲ)
 2. [Layout Inheritance (`@extends`, `@yield`, `@section`)](#၂-layout-inheritance-extends-yield-section)
 3. [Modern Blade Components နှင့် Slots (`<x-component>`)](#၃-modern-blade-components-နှင့်-slots)
-4. [မဖြစ်မနေ သိထားရမည့် Blade Directives များ](#၄-မဖြစ်မနေ-သိထားရမည့်-blade-directives-များ)
-5. [The `$loop` Variable ၏ အစွမ်း](#၅-the-loop-variable-၏-အစွမ်း)
+4. [မဖြစ်မနေ သိထားရမည့် Blade Directives များ (ဘာကြောင့် သုံးရသလဲ?)](#၄-မဖြစ်မနေ-သိထားရမည့်-blade-directives-များ)
+5. [The `$loop` Variable ၏ အစွမ်းနှင့် အားသာချက်များ](#၅-the-loop-variable-၏-အစွမ်း)
 6. [Data Displaying & XSS Security (`{{ }}` vs `{!! !!}`)](#၆-data-displaying--xss-security)
 7. [လက်တွေ့ Dashboard Layout တည်ဆောက်ပုံ နမူနာ](#၇-လက်တွေ့-dashboard-layout-တည်ဆောက်ပုံ-နမူနာ)
 
@@ -16,44 +16,41 @@
 
 ## ၁။ Blade Template Engine ဆိုတာဘာလဲ?
 
-**Blade** သည် Laravel Framework တွင် မူလအသင့်ပါဝင်သော ရိုးရှင်းပြီး အလွန်မြန်ဆန်သည့် **Templating Engine** ဖြစ်သည်။
-* ဖိုင်အမည်များကို `.blade.php` ဖြင့် အဆုံးသတ်ရသည်။
-* Blade ကုဒ်များသည် Plain PHP အဖြစ် compile လုပ်ကာ Cache သိမ်းထားသောကြောင့် စွမ်းဆောင်ရည် အလွန်မြင့်မားသည်။
-* View ဖိုင်များအားလုံးကို `resources/views/` folder အောက်တွင် သိမ်းဆည်းရသည်။
+### (က) ဒါက ဘာလဲ? (What is it?)
+**Blade** သည် Laravel Framework တွင် မူလပါဝင်သော ရိုးရှင်းပြီး အလွန်မြန်ဆန်သည့် **Templating Engine** ဖြစ်သည်။ View ဖိုင်များကို `.blade.php` ဖြင့် အဆုံးသတ်ရသည်။
 
-Controller မှ View ဖိုင်ကို ခေါ်ယူပုံ:
-```php
-// resources/views/products/index.blade.php ကို ခေါ်ယူခြင်း
-return view('products.index', [
-    'title' => 'ကုန်ပစ္စည်းများ',
-    'items' => $products
-]);
-```
+### (ခ) ဘာကြောင့် မဖြစ်မနေ အသုံးပြုရသလဲ? (Why use this feature?)
+ရိုးရိုး PHP တွင် `<?php echo htmlspecialchars($title); ?>` သို့မဟုတ် `<?php foreach($items as $item): ?>` စသဖြင့် ရေးသားရသည်မှာ အလွန်ရှည်လျားပြီး မျက်စိရှုပ်ထွေးစေသည်။ Blade တွင် `{{ $title }}` သို့မဟုတ် `@foreach` ဖြင့် တိုတိုရှင်းရှင်း ရေးနိုင်သည်။
+
+### (ဂ) အသုံးပြုခြင်း၏ အားသာချက်များ (Advantages):
+* **Zero Overhead**: Blade ကုဒ်များသည် Plain PHP အဖြစ် compile လုပ်ကာ Cache သိမ်းထားသောကြောင့် စွမ်းဆောင်ရည် အလွန်မြင့်မားသည်။
+* **Auto-XSS Protection**: Variable တိုင်းကို `htmlspecialchars()` ဖြင့် auto escape လုပ်ပေးသဖြင့် XSS Attack မဖြစ်စေပါ။
+* **Modular Reusability**: Components နှင့် Layouts များဖြင့် UI ကို အပိုင်းလိုက် ပြန်လည်အသုံးပြုနိုင်သည်။
 
 ---
 
 ## ၂။ Layout Inheritance (`@extends`, `@yield`, `@section`)
 
-Web Application တစ်ခုတွင် Navigation Bar, Sidebar, Footer စသည်တို့သည် စာမျက်နှာတိုင်းတွင် တူညီနေလေ့ရှိသည်။ Layout Inheritance ဖြင့် Parent Template တစ်ခုတည်း ပြုလုပ်ထားပြီး Child Pages များတွင် ပြန်လည်အသုံးပြုနိုင်သည်။
+### (က) ဘာကြောင့် သုံးရသလဲ? (Why use this feature?)
+Website စာမျက်နှာတိုင်းတွင် Navigation Bar, Sidebar, Header နှင့် Footer တို့သည် တူညီနေလေ့ရှိသည်။ Layout Inheritance မသုံးပါက HTML ခေါင်းစဉ်နှင့် အောက်ခြေများကို စာမျက်နှာ ၁၀၀ ရှိလျှင် အကြိမ် ၁၀၀ လိုက်ကူးထည့်နေရမည်။
 
-### (က) Master Layout (`resources/views/layouts/master.blade.php`):
+### (ခ) အားသာချက်:
+Parent Template တစ်ခုတည်း ပြုလုပ်ထားပြီး Child Pages များတွင် `@extends` ဖြင့် ပြန်လည်အသုံးပြုနိုင်သည်။
+
+#### Master Layout (`resources/views/layouts/master.blade.php`):
 ```html
 <!DOCTYPE html>
 <html lang="my">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'My Application')</title>
-    <!-- Stylesheets -->
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    @stack('styles')
 </head>
 <body>
     <header>
         <nav>
             <a href="/">Home</a>
             <a href="/products">Products</a>
-            <a href="/about">About</a>
         </nav>
     </header>
 
@@ -63,28 +60,26 @@ Web Application တစ်ခုတွင် Navigation Bar, Sidebar, Footer စ�
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
 
-        {{-- Child View ၏ အဓိက Content ထည့်သွင်းမည့်နေရာ --}}
+        {{-- Child Content ထည့်သွင်းရာနေရာ --}}
         @yield('content')
     </main>
 
     <footer>
-        <p>&copy; {{ date('Y') }} Myanmar Web Academy. All rights reserved.</p>
+        <p>&copy; {{ date('Y') }} Myanmar Web Academy</p>
     </footer>
-
-    @stack('scripts')
 </body>
 </html>
 ```
 
-### (ခ) Child View (`resources/views/about.blade.php`):
+#### Child View (`resources/views/about.blade.php`):
 ```html
 @extends('layouts.master')
 
-@section('title', 'ကျွန်ုပ်တို့အကြောင်း (About Us)')
+@section('title', 'ကျွန်ုပ်တို့အကြောင်း')
 
 @section('content')
     <h1>About Our Company</h1>
-    <p>Laravel အခြေခံမှ စတင်ပြီး ကျွမ်းကျင်သူအဆင့်ထိ လေ့လာနိုင်သော နေရာဖြစ်ပါသည်။</p>
+    <p>Laravel အစမှ အဆုံး လေ့လာနိုင်သော နေရာဖြစ်ပါသည်။</p>
 @endsection
 ```
 
@@ -92,15 +87,18 @@ Web Application တစ်ခုတွင် Navigation Bar, Sidebar, Footer စ�
 
 ## ၃။ Modern Blade Components နှင့် Slots
 
-Laravel တွင် UI Elements များကို ပြန်လည်အသုံးပြုနိုင်သော Components များအဖြစ် သီးသန့်ခွဲထုတ်ရေးသားနိုင်သည်:
+### (က) ဘာကြောင့် သုံးရသလဲ?
+Buttons, Alerts, Modal Boxes, Input Fields စသည့် သေးငယ်သော UI အစိတ်အပိုင်းများကို လွတ်လပ်သော Component အဖြစ် ခွဲထုတ်ရေးသားနိုင်ရန် သုံးသည်။
 
 ```bash
-# Component အသစ် ဖန်တီးခြင်း
 php artisan make:component Alert
 ```
 
-### (က) Alert Component (`resources/views/components/alert.blade.php`):
+### (ခ) အားသာချက်:
+Props များ Pass ပေးနိုင်ပြီး Component Design ပြောင်းလဲလိုပါက ဖိုင်တစ်ခုတည်း ပြင်ရုံဖြင့် Website တစ်ခုလုံး အလိုအလျောက် ပြောင်းသွားသည်။
+
 ```html
+<!-- resources/views/components/alert.blade.php -->
 @props(['type' => 'info', 'message'])
 
 <div class="alert alert-{{ $type }}">
@@ -109,12 +107,10 @@ php artisan make:component Alert
 </div>
 ```
 
-### (ခ) အခြား View များတွင် Component အား အသုံးပြုပုံ:
 ```html
-{{-- Property ဖြင့် ပို့ခြင်း --}}
+<!-- သုံးစွဲပုံ: -->
 <x-alert type="danger" message="အချက်အလက် ထည့်သွင်းမှု မှားယွင်းနေပါသည်။" />
 
-{{-- Slot Body ဖြင့် ပို့ခြင်း --}}
 <x-alert type="success">
     သင်၏ အကောင့်ဖွင့်ခြင်း <strong>အောင်မြင်ပါသည်!</strong>
 </x-alert>
@@ -124,34 +120,23 @@ php artisan make:component Alert
 
 ## ၄။ မဖြစ်မနေ သိထားရမည့် Blade Directives များ
 
-### (က) Conditionals (အခြေအနေ စစ်ဆေးခြင်း)
+### (က) Conditionals & Auth
 ```html
-@if($user->role === 'admin')
-    <p>မင်္ဂလာပါ Admin!</p>
-@elseif($user->role === 'editor')
-    <p>မင်္ဂလာပါ စာတည်း!</p>
-@else
-    <p>မင်္ဂလာပါ အသုံးပြုသူ!</p>
-@endif
-
-{{-- Unless (If not နှင့် အတူတူဖြစ်သည်) --}}
-@unless(Auth::check())
-    <a href="/login">Login ဝင်ရောက်ပါ</a>
-@endunless
-
-{{-- Login ဝင်ထားသလား စစ်ဆေးခြင်း --}}
+{{-- Login ဝင်ထားသူနှင့် ဧည့်သည် ခွဲပြခြင်း --}}
 @auth
-    <p>Login အသုံးပြုသူ: {{ auth()->user()->name }}</p>
+    <p>မင်္ဂလာပါ: {{ auth()->user()->name }}</p>
+    <a href="/logout">Logout</a>
 @endauth
 
 @guest
-    <a href="/login">Sign In</a>
+    <a href="/login">Login ဝင်ရောက်ပါ</a>
 @endguest
 ```
 
-### (ခ) Loops (ထပ်ခါတလဲလဲ ပတ်ခြင်း)
+### (ခ) Loops (`@forelse`)
+* **ဘာကြောင့် သုံးရသလဲ**: Data မရှိပါက "No Data Found" ကို `if(count > 0)` စစ်စရာမလိုဘဲ တစ်ခါတည်း ရှင်းလင်းစွာ ပြပေးသည်။
+
 ```html
-{{-- @forelse: ဒေတာရှိရင် ပတ်ပြီး မရှိရင် empty ပြပေးသည် --}}
 <ul>
 @forelse($products as $product)
     <li>{{ $product->name }} - {{ number_format($product->price) }} MMK</li>
@@ -167,12 +152,11 @@ php artisan make:component Alert
     {{-- CSRF Token မဖြစ်မနေ ထည့်ရပါမည် --}}
     @csrf
 
-    {{-- HTML Form တွင် PUT method သုံးရန် --}}
+    {{-- HTML Form တွင် PUT / DELETE method သုံးရန် --}}
     @method('PUT')
 
     <input type="text" name="name" value="{{ old('name', $product->name) }}">
 
-    {{-- Error ရှိမရှိ စစ်ဆေးပြီး ပြသခြင်း --}}
     @error('name')
         <span class="text-danger">{{ $message }}</span>
     @enderror
@@ -185,54 +169,38 @@ php artisan make:component Alert
 
 ## ၅။ The `$loop` Variable ၏ အစွမ်း
 
-`@foreach` ပတ်တိုင်း Laravel က `$loop` object ကို အလိုအလျောက် ထည့်ပေးထားသည်:
+`@foreach` ပတ်တိုင်း Laravel က `$loop` object ကို auto ထည့်ပေးထားသည်:
 
 ```html
 @foreach($users as $user)
-    <div class="{{ $loop->even ? 'bg-gray-100' : 'bg-white' }}">
+    <div class="{{ $loop->even ? 'bg-gray' : 'bg-white' }}">
         #{{ $loop->iteration }} - {{ $user->name }}
         
         @if($loop->first)
             <span class="badge">ပထမဆုံး Record</span>
         @endif
-
         @if($loop->last)
             <span class="badge">နောက်ဆုံး Record</span>
         @endif
     </div>
 @endforeach
 ```
-* `$loop->iteration` : 1 မှ စတင်ရေတွက်သော Current Index။
-* `$loop->first` : ပထမဆုံး အကြိမ်ဖြစ်ပါက `true`။
-* `$loop->last` : နောက်ဆုံး အကြိမ်ဖြစ်ပါက `true`။
-* `$loop->count` : စုစုပေါင်း item အရေအတွက်။
+* `$loop->iteration`: 1 မှ စတင်ရေတွက်သော Index။
+* `$loop->first` / `$loop->last`: ပထမဆုံး/နောက်ဆုံး record ဖြစ်ပါက true။
+* `$loop->count`: စုစုပေါင်း အရေအတွက်။
 
 ---
 
 ## ၆။ Data Displaying & XSS Security
 
-```html
-{{-- ၁။ Escaped Output (Default - အလွန် လုံခြုံသည်) --}}
-{{-- Browser က Script tags များကို Run မသွားအောင် htmlspecialchars ဖြင့် escape လုပ်ပေးသည် --}}
-<p>{{ $userInput }}</p>
-
-{{-- ၂။ Raw Output (Unescaped - HTML ကို run စေသည်) --}}
-{{-- သတိပြုရန်: အသုံးပြုသူထံမှ လာသော Data ကို ဤပုံစံဖြင့် မပြရပါ။ (XSS Attack ဖြစ်နိုင်သည်) --}}
-<div>{!! $trustedArticleHtmlContent !!}</div>
-
-{{-- ၃။ JavaScript ထဲသို့ Data ပို့ခြင်း --}}
-<script>
-    const user = {{ Js::from($user) }};
-    console.log(user.name);
-</script>
-```
+* `{{ $var }}`: **Escaped Output (အလွန်လုံခြုံသည်)** - Browser က Script run မသွားအောင် htmlspecialchars ဖြင့် auto escape လုပ်ပေးသည်။
+* `{!! $var !!}`: **Raw Output (သတိထားသုံးရန်)** - Rich Text HTML parse လုပ်ပြရန်သာ သုံးရပြီး User Input များတွင် လုံးဝ မသုံးရပါ။
 
 ---
 
 ## ၇။ လက်တွေ့ Dashboard Layout တည်ဆောက်ပုံ နမူနာ
 
 ```html
-<!-- resources/views/dashboard.blade.php -->
 @extends('layouts.master')
 
 @section('title', 'Admin Dashboard')

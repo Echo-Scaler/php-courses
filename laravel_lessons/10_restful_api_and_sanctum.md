@@ -4,10 +4,10 @@
 ---
 
 ## 📌 မာတိကာ (Contents)
-1. [RESTful API ဆိုတာဘာလဲနှင့် Modern Web/Mobile Architecture](#၁-restful-api-ဆိုတာဘာလဲ)
+1. [RESTful API ဆိုတာဘာလဲ? ဘာကြောင့် သုံးရသလဲ?](#၁-restful-api-ဆိုတာဘာလဲ)
 2. [API Routing နှင့် API Versioning (`routes/api.php`)](#၂-api-routing-နှင့်-api-versioning)
-3. [Eloquent API Resources ဖြင့် JSON Output ကို စနစ်တကျ ပြုပြင်ခြင်း](#၃-eloquent-api-resources)
-4. [Laravel Sanctum ဖြင့် Token-Based Authentication စနစ် တည်ဆောက်ခြင်း](#၄-laravel-sanctum-ဖြင့်-token-auth)
+3. [Eloquent API Resources ၏ အရေးကြီးပုံနှင့် အားသာချက်များ](#၃-eloquent-api-resources)
+4. [Laravel Sanctum ဖြင့် Token-Based Authentication စနစ်](#၄-laravel-sanctum-ဖြင့်-token-auth)
 5. [Login, Register, Logout API Endpoints ရေးသားခြင်း](#၅-login-register-logout-api-endpoints)
 6. [Standardized API Response Format နှင့် HTTP Status Codes](#၆-standardized-api-response-format)
 
@@ -15,51 +15,37 @@
 
 ## ၁။ RESTful API ဆိုတာဘာလဲ?
 
-**RESTful API** ဆိုသည်မှာ Frontend (React, Vue, Next.js) သို့မဟုတ် Mobile App (Flutter, React Native, iOS, Android) များအတွက် HTML စာမျက်နှာများ ပြသမည့်အစား စက်အချင်းချင်း နားလည်နိုင်သော **JSON Format ဒေတာများ** ကို လဲလှယ်ပေးပို့သော Backend စနစ် ဖြစ်သည်။
+### (က) ဒါက ဘာလဲ? (What is it?)
+**RESTful API** ဆိုသည်မှာ Frontend (React, Vue, Next.js) သို့မဟုတ် Mobile App (Flutter, React Native, iOS, Android) များအတွက် HTML စာမျက်နှာများ ပြသမည့်အစား စက်အချင်းချင်း နားလည်နိုင်သော **JSON Format ဒေတာများ** ကို လဲလှယ်ပေးပို့သော Backend ဝန်ဆောင်မှု ဖြစ်သည်။
 
-```
-[Mobile App / React SPA]
-           │
-           │ (1) HTTP Request + Bearer Token (e.g. GET /api/v1/products)
-           ▼
-┌─────────────────────────────────┐
-│     Laravel RESTful API         │
-│  • Sanctum Authentication Token │
-│  • Eloquent API Resource        │
-└──────────┬──────────────────────┘
-           │
-           │ (2) Pure JSON Data (200 OK)
-           ▼
-[Mobile App / React UI Rendering]
-```
+### (ခ) ဘာကြောင့် မဖြစ်မနေ အသုံးပြုရသလဲ? (Why use this feature in real work?)
+ခေတ်မီဆော့ဖ်ဝဲလ်လောကတွင် Web ရော Mobile App ပါ ပြိုင်တူ တည်ဆောက်ကြသည်။ Backend Logic ကို နှစ်ခါပြန်မရေးရဘဲ Single Source Backend အဖြစ် ထားရှိရန် API ကို မဖြစ်မနေ သုံးရသည်။
+
+### (ဂ) အသုံးပြုခြင်း၏ အားသာချက်များ (Advantages):
+* **Cross-Platform**: မည်သည့် Frontend Device မဆို JSON Data ကို တူညီစွာ ဖတ်ရှုအသုံးပြုနိုင်သည်။
+* **Stateless**: Server ဘက်တွင် Session သိမ်းစရာမလိုဘဲ Bearer Token ဖြင့် စစ်ဆေးသဖြင့် Scalability အလွန်ကောင်းမွန်သည်။
 
 ---
 
 ## ၂။ API Routing နှင့် API Versioning
 
-Laravel 11 တွင် API routing စတင်အသုံးပြုရန်:
+Laravel 11 တွင် API routing စတင်ရန်:
 ```bash
 php artisan install:api
 ```
-ဤ command သည် `routes/api.php` ဖိုင်နှင့် `Laravel Sanctum` ကို အလိုအလျောက် တပ်ဆင်ပေးသည်။
 
-### API Versioning စနစ် (`routes/api.php`):
-Mobile App များ Version အသစ်ထွက်တိုင်း Backend မပျက်စီးစေရန် `/api/v1/` စသဖြင့် ခွဲခြားရေးသားခြင်း:
+### ဘာကြောင့် API Versioning (`/api/v1/`) သုံးရသလဲ?
+Mobile App အဟောင်းကို သုံးနေသေးသော User များအတွက် Backend က ပြင်လိုက်ပါက App ပျက်ကျ (Crash) မသွားစေရန် Version ခွဲခြားရေးသားခြင်း ဖြစ်သည်။
 
 ```php
+// routes/api.php
 use App\Http\Controllers\Api\V1\ProductController;
-use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
-    // Public Routes (မည်သူမဆို ကြည့်နိုင်သည်)
     Route::get('/products', [ProductController::class, 'index']);
-    Route::get('/products/{id}', [ProductController::class, 'show']);
-
-    // Protected Routes (Token ပါမှသာ ခွင့်ပြုမည်)
+    
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/products', [ProductController::class, 'store']);
-        Route::put('/products/{id}', [ProductController::class, 'update']);
-        Route::delete('/products/{id}', [ProductController::class, 'destroy']);
     });
 });
 ```
@@ -68,12 +54,19 @@ Route::prefix('v1')->group(function () {
 
 ## ၃။ Eloquent API Resources
 
-Model မှ Data ကို တိုက်ရိုက် `return $product;` လုပ်မည့်အစား **API Resource** ကို အသုံးပြုရသည်။
-* **အားသာချက်**: မလိုအပ်သော Database Column များကို ဖျောက်ထားနိုင်ခြင်း၊ Field အမည်များ ပြောင်းနိုင်ခြင်းနှင့် Date format များကို စနစ်တကျ ပြုပြင်ပေးနိုင်ခြင်း။
+### (က) ဒါက ဘာလဲ? (What is it?)
+Database Model မှ Data များကို JSON အဖြစ် ပြောင်းလဲပေးပို့ရာတွင် ကြားခံ Layer အဖြစ် စစ်ထုတ်ပေးသော Class ဖြစ်သည်။
 
 ```bash
 php artisan make:resource ProductResource
 ```
+
+### (ခ) ဘာကြောင့် Model ကို တိုက်ရိုက် `return` မလုပ်သင့်သလဲ? (Why use this feature?)
+Model ကို တိုက်ရိုက် return လုပ်ပါက `password`, `cost_price` ကဲ့သို့ လျှို့ဝှက်ချက် Column များ အပြင်သို့ ပေါက်ကြားသွားနိုင်သည်။ ထို့အပြင် Database Column အမည် ပြောင်းလိုက်ပါက Frontend App များ အကုန် ပျက်စီးသွားမည်။
+
+### (ဂ) အားသာချက်များ:
+* **Security & Encapsulation**: ပြသလိုသော Field များကိုသာ တိကျစွာ ရွေးထုတ်ပေးနိုင်သည်။
+* **Data Formatting**: စျေးနှုန်းနှင့် နေ့စွဲများကို စံသတ်မှတ်ချက်အတိုင်း ပြင်ဆင်ပေးနိုင်သည်။
 
 ```php
 // app/Http/Resources/ProductResource.php
@@ -92,11 +85,6 @@ class ProductResource extends JsonResource
             'price'           => (float) $this->price,
             'formatted_price' => number_format($this->price) . ' MMK',
             'in_stock'        => $this->stock > 0,
-            'category'        => [
-                'id'   => $this->category?->id,
-                'name' => $this->category?->name,
-            ],
-            'image_url'       => $this->image ? asset('storage/' . $this->image) : null,
             'created_at'      => $this->created_at->toIso8601String(),
         ];
     }
@@ -107,17 +95,8 @@ class ProductResource extends JsonResource
 
 ## ၄။ Laravel Sanctum ဖြင့် Token-Based Authentication
 
-Sanctum သည် SPA နှင့် Mobile App များအတွက် အလွန်ပေါ့ပါးမြန်ဆန်သော Token-based Authentication ကို ပေးစွမ်းသည်။
-
-`app/Models/User.php` တွင် `HasApiTokens` trait ပါဝင်ရမည်:
-```php
-use Laravel\Sanctum\HasApiTokens;
-
-class User extends Authenticatable
-{
-    use HasApiTokens, HasFactory, Notifiable;
-}
-```
+### (က) ဘာကြောင့် Cookie Session မသုံးဘဲ Token Auth သုံးရသလဲ?
+Mobile App များ (Flutter, iOS, Android) သည် Web Browser ကဲ့သို့ Cookies များကို ကောင်းမွန်စွာ မကိုင်တွယ်နိုင်ပါ။ ထို့ကြောင့် Header ထဲတွင် `Authorization: Bearer <token>` ထည့်သွင်းပေးပို့သော Token စနစ်ကို သုံးသည်။
 
 ---
 
@@ -130,38 +109,9 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 
 class AuthApiController extends Controller
 {
-    // ၁။ Register API
-    public function register(Request $request)
-    {
-        $validated = $request->validate([
-            'name'     => 'required|string|max:100',
-            'email'    => 'required|email|unique:users,email',
-            'password' => 'required|min:8',
-        ]);
-
-        $user = User::create([
-            'name'     => $validated['name'],
-            'email'    => $validated['email'],
-            'password' => Hash::make($validated['password']),
-        ]);
-
-        $token = $user->createToken('mobile-app')->plainTextToken;
-
-        return response()->json([
-            'status'  => 'success',
-            'message' => 'အကောင့်ဖွင့်ခြင်း အောင်မြင်ပါသည်',
-            'data'    => [
-                'user'  => $user,
-                'token' => $token,
-            ]
-        ], 201);
-    }
-
-    // ၂။ Login API
     public function login(Request $request)
     {
         $request->validate([
@@ -178,7 +128,7 @@ class AuthApiController extends Controller
             ], 401);
         }
 
-        // Bearer Token အသစ် ထုတ်ပေးခြင်း
+        // Bearer Token ထုတ်ပေးခြင်း
         $token = $user->createToken('auth-token')->plainTextToken;
 
         return response()->json([
@@ -189,10 +139,9 @@ class AuthApiController extends Controller
         ]);
     }
 
-    // ၃။ Logout API
     public function logout(Request $request)
     {
-        // လက်ရှိ သုံးနေသော Token ကို ဖျက်သိမ်းခြင်း
+        // လက်ရှိ Token ကို ဖျက်သိမ်းခြင်း
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
@@ -207,23 +156,12 @@ class AuthApiController extends Controller
 
 ## ၆။ Standardized API Response Format နှင့် HTTP Status Codes
 
-လုပ်ငန်းခွင်တွင် Frontend Team နှင့် ချိတ်ဆက်အလုပ်လုပ်ရာတွင် Response Format တသမတ်တည်း ရှိရန် အလွန်အရေးကြီးသည်:
-
-### စံ Response ပုံစံ:
-```json
-{
-  "status": "success",
-  "message": "Data retrieved successfully",
-  "data": { ... }
-}
-```
-
-| HTTP Status Code | အဓိပ္ပာယ် | မည်သည့်အခါတွင် သုံးသလဲ |
+| HTTP Status | အဓိပ္ပာယ် | မည်သည့်အခါတွင် သုံးသလဲ |
 | :--- | :--- | :--- |
-| `200 OK` | Success | GET, PUT, PATCH အောင်မြင်သောအခါ |
-| `201 Created` | Resource Created | POST ဖြင့် အသစ်တစ်ခု ထည့်သွင်းအောင်မြင်သောအခါ |
-| `401 Unauthorized` | Not Logged In | Token မပါခြင်း သို့မဟုတ် Token သက်တမ်းကုန်နေခြင်း |
-| `403 Forbidden` | Permission Denied | Login ဝင်ထားသော်လည်း လုပ်ပိုင်ခွင့် မရှိခြင်း |
-| `404 Not Found` | Not Found | ရှာဖွေသော Data မရှိသောအခါ |
+| `200 OK` | Success | GET, PUT အောင်မြင်သောအခါ |
+| `201 Created` | Created | POST ဖြင့် အသစ်ထည့်သွင်းမှု အောင်မြင်သောအခါ |
+| `401 Unauthorized` | Auth Failed | Token မပါခြင်း သို့မဟုတ် သက်တမ်းကုန်နေခြင်း |
+| `403 Forbidden` | Forbidden | Login ဝင်ထားသော်လည်း လုပ်ပိုင်ခွင့် မရှိခြင်း |
+| `404 Not Found` | Not Found | ဒေတာ ရှာမတွေ့သောအခါ |
 | `422 Unprocessable`| Validation Failed | Input ဒေတာ မှားယွင်းနေသောအခါ |
-| `500 Server Error` | Server Exception | Backend ကုဒ် သို့မဟုတ် Server အမှားဖြစ်သောအခါ |
+| `500 Server Error` | Server Exception | Backend Code အမှားဖြစ်သောအခါ |
