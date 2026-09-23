@@ -67,6 +67,35 @@
 | **11** | **Default Built-in Functions** | [11_most_used_built_in_functions.md](file:///Users/kyawwaiyan/Documents/my-Home-tech/php-beginnerTomaster/lessons/11_most_used_built_in_functions.md) | လုပ်ငန်းခွင်သုံး မဖြစ်မနေ Built-in Functions များ (Strings, Arrays, DateTime, Files, JSON) |
 | **12** | **Modern PHP 8+ Features** | [12_modern_php8_features.md](file:///Users/kyawwaiyan/Documents/my-Home-tech/php-beginnerTomaster/lessons/12_modern_php8_features.md) | Match expression, Nullsafe (?->), Enums, Readonly classes, Attributes (#[Route]) |
 | **13** | **Design Patterns & Structures** | [13_design_patterns_in_php.md](file:///Users/kyawwaiyan/Documents/my-Home-tech/php-beginnerTomaster/lessons/13_design_patterns_in_php.md) | Repository Pattern, Dependency Injection, DTO, Factory, Singleton, Event-Driven Architecture |
+| **14** | **🚀 Laravel Beginner to Master** | [LARAVEL_BEGINNER_TO_MASTER.md](file:///Users/kyawwaiyan/Documents/my-Home-tech/php-beginnerTomaster/LARAVEL_BEGINNER_TO_MASTER.md) | Laravel အစမှ အဆုံး လုပ်ငန်းခွင်သုံး အဆင့်ဆင့်လမ်းညွှန် (Routing, Eloquent ORM, Blade, API, Sanctum, Queues, Helpers) |
+
+---
+
+## 🚀 ၄.၁။ Laravel သီးသန့် အခန်းလိုက် သင်ခန်းစာများ (`laravel_lessons/`)
+
+Laravel Framework ကို အခြေခံမှ စတင်၍ လုပ်ငန်းခွင်အဆင့်အထိ အသေးစိတ် လေ့လာနိုင်ရန် `laravel_lessons/` folder တွင် အောက်ပါအတိုင်း သီးသန့် `.md` ဖိုင်များဖြင့် ရေးသားထားပါသည်:
+
+| စဉ် | သင်ခန်းစာ ခေါင်းစဉ် | သီးသန့် လေ့လာရန် ဖိုင်လမ်းကြောင်း | အဓိက သင်ယူရမည့် အချက်များ |
+| :---: | :--- | :--- | :--- |
+| **01** | **Intro & Request Lifecycle** | [01_intro_and_request_lifecycle.md](file:///Users/kyawwaiyan/Documents/my-Home-tech/php-beginnerTomaster/laravel_lessons/01_intro_and_request_lifecycle.md) | Laravel ဆိုတာဘာလဲ၊ Architecture & Request Lifecycle အဆင့်ဆင့် Diagram |
+| **02** | **Installation & Directory** | [02_installation_and_directory_structure.md](file:///Users/kyawwaiyan/Documents/my-Home-tech/php-beginnerTomaster/laravel_lessons/02_installation_and_directory_structure.md) | Setup ပြုလုပ်ခြင်း၊ Directory Structure တစ်ခုချင်း၏ တာဝန်၊ `.env` ဖိုင် |
+| **03** | **Routing & Controllers** | [03_routing_and_controllers.md](file:///Users/kyawwaiyan/Documents/my-Home-tech/php-beginnerTomaster/laravel_lessons/03_routing_and_controllers.md) | Route Parameters, Resource Controllers, Route Model Binding |
+| **04** | **Blade Template Engine** | [04_blade_template_engine.md](file:///Users/kyawwaiyan/Documents/my-Home-tech/php-beginnerTomaster/laravel_lessons/04_blade_template_engine.md) | Layouts, Components, Slots, Blade Directives, XSS Protection |
+| **05** | **Migrations, Seeders & Factories** | [05_migrations_seeders_and_factories.md](file:///Users/kyawwaiyan/Documents/my-Home-tech/php-beginnerTomaster/laravel_lessons/05_migrations_seeders_and_factories.md) | Schema Design, Foreign Keys, Cascade Delete, Faker Dummy Data |
+| **06** | **Eloquent ORM & Relationships** | [06_eloquent_orm_and_relationships.md](file:///Users/kyawwaiyan/Documents/my-Home-tech/php-beginnerTomaster/laravel_lessons/06_eloquent_orm_and_relationships.md) | CRUD, Relationships (1:1, 1:N, N:N), **N+1 Problem ကို Eager Loading ဖြင့် ဖြေရှင်းပုံ** |
+| **07** | **Requests & Validation** | [07_requests_and_validation.md](file:///Users/kyawwaiyan/Documents/my-Home-tech/php-beginnerTomaster/laravel_lessons/07_requests_and_validation.md) | Form Requests, Validation Rules, မြန်မာလို Error Messages |
+| **08** | **Middleware & Authentication** | [08_middleware_and_authentication.md](file:///Users/kyawwaiyan/Documents/my-Home-tech/php-beginnerTomaster/laravel_lessons/08_middleware_and_authentication.md) | Custom Middlewares, Session Auth, Laravel Breeze, Gates & Policies |
+| **09** | **File Storage & Uploads** | [09_file_storage_and_uploads.md](file:///Users/kyawwaiyan/Documents/my-Home-tech/php-beginnerTomaster/laravel_lessons/09_file_storage_and_uploads.md) | Filesystem Disks, `storage:link`, ပုံဟောင်း auto ဖျက်ပြီး အသစ်တင်ပုံ |
+| **10** | **RESTful API & Sanctum** | [10_restful_api_and_sanctum.md](file:///Users/kyawwaiyan/Documents/my-Home-tech/php-beginnerTomaster/laravel_lessons/10_restful_api_and_sanctum.md) | API Resources, Sanctum Bearer Token, JSON Response Standards |
+| **11** | **Queues, Jobs & Mail** | [11_queues_jobs_and_mail.md](file:///Users/kyawwaiyan/Documents/my-Home-tech/php-beginnerTomaster/laravel_lessons/11_queues_jobs_and_mail.md) | Background Jobs (`ShouldQueue`), Queue Worker, Mailables, Events |
+| **12** | **Helpers, Collections & Facades** | [12_most_used_helpers_and_facades.md](file:///Users/kyawwaiyan/Documents/my-Home-tech/php-beginnerTomaster/laravel_lessons/12_most_used_helpers_and_facades.md) | Collections Methods (`map`, `filter`, `pluck`), `Str`, `Arr`, Carbon Date |
+| **13** | **Service Layer & DB Transactions** | [13_service_repository_pattern.md](file:///Users/kyawwaiyan/Documents/my-Home-tech/php-beginnerTomaster/laravel_lessons/13_service_repository_pattern.md) | Fat Controllers ရှင်းထုတ်ခြင်း၊ Clean Service Layer, Database Transactions |
+| **14** | **Production & Security** | [14_production_optimization_and_security.md](file:///Users/kyawwaiyan/Documents/my-Home-tech/php-beginnerTomaster/laravel_lessons/14_production_optimization_and_security.md) | `optimize`, `config:cache`, Rate Limiting, `.env` Security Hardening |
+| **15** | **Advanced Mail & Notifications** | [15_advanced_mail_and_notifications.md](file:///Users/kyawwaiyan/Documents/my-Home-tech/php-beginnerTomaster/laravel_lessons/15_advanced_mail_and_notifications.md) | Markdown Mailables, Attachments, Queued Mail, Multi-Channel Notifications (Mail, DB, SMS) |
+| **16** | **Redis Mastery & Caching** | [16_redis_mastery_and_caching.md](file:///Users/kyawwaiyan/Documents/my-Home-tech/php-beginnerTomaster/laravel_lessons/16_redis_mastery_and_caching.md) | Redis In-memory Cache, Cache Tags, Shared Sessions, Horizon Queues, Atomic Locks (`Cache::lock`) |
+| **17** | **AWS Cloud Integration** | [17_aws_cloud_integration.md](file:///Users/kyawwaiyan/Documents/my-Home-tech/php-beginnerTomaster/laravel_lessons/17_aws_cloud_integration.md) | AWS S3 Public/Private Media, Pre-signed Temporary URLs, AWS SES Bulk Mail, SQS Queues, CloudFront CDN |
+| **18** | **Task Scheduling & WebSockets** | [18_task_scheduling_and_realtime.md](file:///Users/kyawwaiyan/Documents/my-Home-tech/php-beginnerTomaster/laravel_lessons/18_task_scheduling_and_realtime.md) | Laravel Task Scheduling (Cron Jobs), `withoutOverlapping()`, Real-time WebSockets, Laravel Reverb |
+| **19** | **🛡️⚡ Security & Performance Mastery** | [19_security_and_performance_mastery.md](file:///Users/kyawwaiyan/Documents/my-Home-tech/php-beginnerTomaster/laravel_lessons/19_security_and_performance_mastery.md) | SQLi, XSS, CSRF, Mass Assignment, N+1 Query Problem, Indexing, Caching, Chunking & Production Optimization |
 
 ---
 
