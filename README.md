@@ -628,13 +628,14 @@ Laravel Framework ကို အခြေခံမှ စတင်၍ လုပ�
 
 ---
 
-## 🚀 ၇။ သင်တန်းအောင်မြင်ပြီးနောက် ရှေ့ဆက်ရမည့် လမ်းညွှန် (Next Steps)
+## 🚀 ၇။ သင်တန်းအောင်မြင်ပြီးနောက် ရှေ့ဆက်ရမည့် လမ်းညွှန် (Next Steps & Companion Guides)
 
-ဤသင်တန်းကို ပြီးမြောက်ပါက PHP Core & Backend Architecture ဆိုင်ရာ အခြေခံများ ခိုင်မာသွားပြီ ဖြစ်သောကြောင့် အောက်ပါတို့ကို ဆက်လက်တက်လှမ်းနိုင်ပါပြီ:
-1. **Laravel Framework**: ခေတ်မီ PHP ၏ နံပါတ် ၁ Framework ဖြစ်ပြီး အလုပ်အကိုင် အပေါများဆုံး နယ်ပယ်သို့ ဝင်ရောက်နိုင်ခြင်း။
-2. **Docker for PHP**: Local development နှင့် Server deployment ပိုမိုလွယ်ကူစေမည့် Container စနစ်။
-3. **Automated Testing (PHPUnit)**: Code အရည်အသွေးကို စစ်ဆေးနိုင်သည့် Test-Driven Development (TDD) လေ့လာခြင်း။
+ဤသင်တန်းကို ပြီးမြောက်ပါက PHP Core & Backend Architecture ဆိုင်ရာ အခြေခံများ ခိုင်မာသွားပြီ ဖြစ်သောကြောင့် အောက်ပါ လက်တွေ့လမ်းညွှန်များကို ဆက်လက်တက်လှမ်းနိုင်ပါပြီ:
+1. **[LARAVEL_BEGINNER_TO_MASTER.md](file:///Users/kyawwaiyan/Documents/my-Home-tech/php-beginnerTomaster/LARAVEL_BEGINNER_TO_MASTER.md)**: ခေတ်မီ PHP ၏ နံပါတ် ၁ Framework ဖြစ်ပြီး အလုပ်အကိုင် အပေါများဆုံး နယ်ပယ်သို့ ဝင်ရောက်နိုင်သော ပြည့်စုံသည့် သင်ရိုးညွှန်းတမ်း။
+2. **[JAVASCRIPT_BEGINNER_TO_MASTER.md](file:///Users/kyawwaiyan/Documents/my-Home-tech/php-beginnerTomaster/JAVASCRIPT_BEGINNER_TO_MASTER.md)**: Full-Stack Developer တစ်ဦးဖြစ်ရန် မရှိမဖြစ်လိုအပ်သော Modern JavaScript (ES6+ to ESNext) အဆင့်ဆင့် လမ်းညွှန်။
+3. **[DOCKER_KUBERNETES_BEGINNER_TO_MASTER.md](file:///Users/kyawwaiyan/Documents/my-Home-tech/php-beginnerTomaster/DOCKER_KUBERNETES_BEGINNER_TO_MASTER.md)**: Docker Containerization အခြေခံမှစ၍ Production Cloud ပေါ်တွင် Microservices များကို Kubernetes Orchestration ဖြင့် မောင်းနှင်ထိန်းကျောင်းနိုင်သည့် Enterprise Guide။
 
 ---
 *PHP Beginner to Master သင်တန်းသည် ပရိုဂရမ်မာအသစ်များအား ကျွမ်းကျင် Backend Developer ဘဝသို့ ရောက်ရှိစေရန် အကောင်းဆုံး ပို့ဆောင်ပေးမည် ဖြစ်ပါသည်။* 💡
 # php-courses
+
