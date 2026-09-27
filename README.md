@@ -634,6 +634,7 @@ Laravel Framework ကို အခြေခံမှ စတင်၍ လုပ�
 1. **[LARAVEL_BEGINNER_TO_MASTER.md](file:///Users/kyawwaiyan/Documents/my-Home-tech/php-beginnerTomaster/LARAVEL_BEGINNER_TO_MASTER.md)**: ခေတ်မီ PHP ၏ နံပါတ် ၁ Framework ဖြစ်ပြီး အလုပ်အကိုင် အပေါများဆုံး နယ်ပယ်သို့ ဝင်ရောက်နိုင်သော ပြည့်စုံသည့် သင်ရိုးညွှန်းတမ်း။
 2. **[JAVASCRIPT_BEGINNER_TO_MASTER.md](file:///Users/kyawwaiyan/Documents/my-Home-tech/php-beginnerTomaster/JAVASCRIPT_BEGINNER_TO_MASTER.md)**: Full-Stack Developer တစ်ဦးဖြစ်ရန် မရှိမဖြစ်လိုအပ်သော Modern JavaScript (ES6+ to ESNext) အဆင့်ဆင့် လမ်းညွှန်။
 3. **[DOCKER_KUBERNETES_BEGINNER_TO_MASTER.md](file:///Users/kyawwaiyan/Documents/my-Home-tech/php-beginnerTomaster/DOCKER_KUBERNETES_BEGINNER_TO_MASTER.md)**: Docker Containerization အခြေခံမှစ၍ Production Cloud ပေါ်တွင် Microservices များကို Kubernetes Orchestration ဖြင့် မောင်းနှင်ထိန်းကျောင်းနိုင်သည့် Enterprise Guide။
+4. **[MYSQL_BEGINNER_TO_MASTER.md](file:///Users/kyawwaiyan/Documents/my-Home-tech/php-beginnerTomaster/MYSQL_BEGINNER_TO_MASTER.md)**: MySQL (DBMS) အခြေခံမှစ၍ Advanced Indexing, Query Optimization, ACID Transactions, Replication နှင့် Production Security အထိ ပြည့်စုံသော လမ်းညွှန်။
 
 ---
 *PHP Beginner to Master သင်တန်းသည် ပရိုဂရမ်မာအသစ်များအား ကျွမ်းကျင် Backend Developer ဘဝသို့ ရောက်ရှိစေရန် အကောင်းဆုံး ပို့ဆောင်ပေးမည် ဖြစ်ပါသည်။* 💡
